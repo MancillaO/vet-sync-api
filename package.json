@@ -2,11 +2,26 @@
   "name": "barber-sync-api",
   "version": "1.0.0",
   "main": "app.js",
+  "type": "module",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node app.js",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "description": ""
+  "description": "",
+  "dependencies": {
+    "bcrypt": "6.0.0",
+    "cors": "2.8.5",
+    "dotenv": "16.5.0",
+    "express": "5.1.0",
+    "morgan": "1.10.0",
+    "zod": "3.25.7"
+  },
+  "devDependencies": {
+    "eslint": "^9.27.0"
+  }
 }
