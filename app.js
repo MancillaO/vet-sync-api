@@ -1,5 +1,6 @@
 import express from 'express'
 import { corsMiddleware } from './src/middlewares/cors'
+import { userRouter } from './src/routes/userRouter.js'
 import { port, logger } from './config.js'
 import morgan from 'morgan'
 
@@ -9,6 +10,8 @@ app.use(express.json())
 app.disable('x-powered-by')
 app.use(morgan(logger))
 app.use(corsMiddleware())
+
+app.use('/api/users', userRouter)
 
 app.listen(port, () => {
   console.log(`Server running on port ${port}`)
