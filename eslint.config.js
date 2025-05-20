@@ -48,8 +48,7 @@ module.exports = [
       'camelcase': 'error',
       'brace-style': ['error', '1tbs', { allowSingleLine: true }],
       'curly': ['error', 'multi-line'],
-      'no-unused-vars': ['error', { argsIgnorePattern: '^_', varsIgnorePattern: '^_' }],
-      'no-console': ['warn', { allow: ['warn', 'error'] }]
+      'no-unused-vars': ['error', { argsIgnorePattern: '^_', varsIgnorePattern: '^_' }]
     }
   }
 ]
