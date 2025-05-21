@@ -16,15 +16,14 @@ const UserSchema = z.object({
     .max(100, 'La contraseña no debe exceder los 100 caracteres')
     .trim(),
 
-  role: z.enum(['client', 'admin'], {
-    errorMap: () => ({ message: 'El rol debe ser "client" o "admin"' })
-  })
+  role_id: z.number()
+    .min(1, 'El rol es obligatorio')
 })
 
-export function validateUser(object) {
+export function validateUser (object) {
   return UserSchema.safeParse(object)
 }
 
-export function validatePartialUser(object) {
+export function validatePartialUser (object) {
   return UserSchema.partial().safeParse(object)
 }
