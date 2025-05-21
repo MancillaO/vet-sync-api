@@ -6,14 +6,13 @@ export class UserController {
     const result = validateUser(req.body)
 
     if (result.error){
-      return res.status(422).json({ error: JSON.parse(result.error.message   ) })
+      return res.status(422).json({ error: JSON.parse(result.error.message) })
     }
 
     try {
-      const user = await userModel.create({ input: result.data })
-      return res.status(201).json(user)
+      const user = await userModel.createUser({ input: result.data })
+      return res.status(201).json({ message: 'User created', data: user })
     } catch (error) {
-      console.log(error)
       return res.status(500).json({ error: error.message })
     }
   }
@@ -21,23 +20,24 @@ export class UserController {
   static async getAllUsers (req, res) {
     const { email } = req.query
 
-    const users = await userModel.getAll({ email })
+    const users = await userModel.getAllUsers({ email })
 
     if (users.length === 0){ // TODO: Cambiar validacion dependiendo de la respuesta
       return res.status(404).json({ error: 'Users not found' })
     }
-    res.json(users)
+    res.json({ message: 'Users found', data: users })
   }
 
   static async getById (req, res) {
     const { id } = req.params
 
     const user = await userModel.getById({ id })
+    console.log(user)
 
-    if (!user){
+    if (user.length === 0){
       return res.status(404).json({ error: 'User not found' })
     }
-    res.json(user)
+    res.json({ message: 'User found', data: user })
   }
 
   static async updateUser (req, res){
@@ -48,22 +48,22 @@ export class UserController {
       return res.status(422).json({ error: JSON.parse(result.error.message) })
     }
 
-    const updatedUser = await userModel.update({ id, input: result.data })
+    const updatedUser = await userModel.updateUser({ id, input: result.data })
 
-    if (!updatedUser){
+    if (updatedUser.length === 0){
       return res.status(404).json({ error: 'User not found' })
     }
-    res.json(updatedUser)
+    res.json({ message: 'User updated', data: updatedUser })
   }
 
   static async deleteUser (req, res){
     const { id } = req.params
 
-    const deletedUser = await userModel.delete({ id })
+    const deletedUser = await userModel.deleteUser({ id })
 
-    if (!deletedUser){
+    if (deletedUser.length === 0){
       return res.status(404).json({ error: 'User not found' })
     }
-    res.json(deletedUser)
+    res.json({ message: 'User deleted', data: deletedUser })
   }
 }

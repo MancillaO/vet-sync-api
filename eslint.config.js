@@ -34,18 +34,18 @@ export default [
       'object-curly-spacing': ['error', 'always'],
       'array-bracket-spacing': ['error', 'never'],
       'comma-spacing': ['error', { before: false, after: true }],
-      'key-spacing': ['error', { beforeColon: false, afterColon: true }],
+      'key-spacing': ['error', { beforeColon: false, afterColon: true, mode: 'strict' }],
       'keyword-spacing': ['error', { before: true, after: true }],
       'space-infix-ops': 'error',
       'arrow-spacing': ['error', { before: true, after: true }],
       'spaced-comment': ['error', 'always'],
+      'no-multi-spaces': 'error', // Esta regla detectará espacios múltiples
 
       // Buenas prácticas
       'no-var': 'error',
       'prefer-const': 'error',
       'eqeqeq': ['error', 'always'],
       'comma-dangle': ['error', 'never'],
-      'camelcase': 'error',
       'brace-style': ['error', '1tbs', { allowSingleLine: true }],
       'curly': ['error', 'multi-line'],
       'no-unused-vars': ['error', { argsIgnorePattern: '^_', varsIgnorePattern: '^_' }]
