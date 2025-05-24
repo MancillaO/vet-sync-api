@@ -1,8 +1,5 @@
-import { createClient } from '@supabase/supabase-js'
-import { supabaseUrl, supabaseKey } from '../../config.js'
+import { supabase } from './index.js'
 import bcrypt from 'bcrypt'
-
-const supabase = createClient(supabaseUrl, supabaseKey)
 
 export class userModel {
 
