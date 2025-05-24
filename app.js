@@ -16,5 +16,5 @@ app.use('/api/users', userRouter)
 app.use('/auth', authRouter)
 
 app.listen(port, () => {
-  console.log(`Server running on port ${port}\n`)
+  console.log(`\nServer running on port ${port}\n`)
 })

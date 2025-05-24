@@ -7,14 +7,16 @@ const supabase = createClient(supabaseUrl, supabaseKey)
 export class userModel {
 
   static async createUser ({ input }){
-    const { name, email, password, role_id } = input
+    const { nombre, apellido, email, password, telefono, direccion } = input
     const hashedPassword = await bcrypt.hash(password, 10)
 
     try {
-      const { data, error } = await supabase.from('users').insert({
-        name,
+      const { data, error } = await supabase.from('usuarios').insert({
+        nombre,
+        apellido,
         email,
-        role_id,
+        telefono,
+        direccion: direccion || '',
         password: hashedPassword
       }).select()
 
@@ -27,7 +29,7 @@ export class userModel {
   }
 
   static async getAllUsers ({ email }) {
-    let query = supabase.from('users').select()
+    let query = supabase.from('usuarios').select()
 
     if (email) {
       query = query.eq('email', email)
@@ -41,7 +43,7 @@ export class userModel {
   }
 
   static async getById ({ id }){
-    const { data, error } = await supabase.from('users').select().eq('id', id)
+    const { data, error } = await supabase.from('usuarios').select().eq('id', id)
     if (error) throw error
 
     return data
@@ -51,9 +53,11 @@ export class userModel {
   static async updateUser ({ id, input }) {
     const updateData = {}
 
-    if (input.name !== undefined) updateData.name = input.name
+    if (input.nombre !== undefined) updateData.nombre = input.nombre
+    if (input.apellido !== undefined) updateData.apellido = input.apellido
     if (input.email !== undefined) updateData.email = input.email
-    if (input.role_id !== undefined) updateData.role_id = input.role_id
+    if (input.telefono !== undefined) updateData.telefono = input.telefono
+    if (input.direccion !== undefined) updateData.direccion = input.direccion
 
     if (input.password !== undefined) {
       updateData.password = await bcrypt.hash(input.password, 10)
@@ -64,7 +68,7 @@ export class userModel {
     }
 
     try {
-      const { data, error } = await supabase.from('users').update(updateData).eq('id', id).select()
+      const { data, error } = await supabase.from('usuarios').update(updateData).eq('id', id).select()
 
       if (error) throw error
 
@@ -76,7 +80,7 @@ export class userModel {
 
   static async deleteUser ({ id }) {
     try {
-      const { error } = await supabase.from('users').update({ is_active: false }).eq('id', id)
+      const { error } = await supabase.from('usuarios').update({ activo: false }).eq('id', id)
 
       if (error) throw error
 
