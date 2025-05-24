@@ -14,7 +14,7 @@ export class AuthController {
         return res.status(404).json({ message: 'Email not found' })
       }
 
-      if (!user[0].is_active) {
+      if (!user[0].activo) {
         return res.status(401).json({ message: 'User is not active' })
       }
 
