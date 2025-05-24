@@ -1,5 +1,5 @@
 {
-  "name": "barber-sync-api",
+  "name": "vet-plan-api",
   "version": "1.0.0",
   "main": "app.js",
   "type": "module",
