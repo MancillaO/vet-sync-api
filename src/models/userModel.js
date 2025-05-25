@@ -50,13 +50,13 @@ export class userModel {
   static async updateUser ({ id, input }) {
     const updateData = {}
 
-    if (input.nombre !== undefined) updateData.nombre = input.nombre
-    if (input.apellido !== undefined) updateData.apellido = input.apellido
-    if (input.email !== undefined) updateData.email = input.email
-    if (input.telefono !== undefined) updateData.telefono = input.telefono
-    if (input.direccion !== undefined) updateData.direccion = input.direccion
+    input.nombre ? updateData.nombre = input.nombre : null
+    input.apellido ? updateData.apellido = input.apellido : null
+    input.email ? updateData.email = input.email : null
+    input.telefono ? updateData.telefono = input.telefono : null
+    input.direccion ? updateData.direccion = input.direccion : null
 
-    if (input.password !== undefined) {
+    if (input.password) {
       updateData.password = await bcrypt.hash(input.password, 10)
     }
 
