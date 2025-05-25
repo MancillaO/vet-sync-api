@@ -8,7 +8,7 @@ export class userModel {
     const hashedPassword = await bcrypt.hash(password, 10)
 
     try {
-      const { data, error } = await supabase.from('usuarios').insert({
+      const { data: user, error } = await supabase.from('usuarios').insert({
         nombre,
         apellido,
         email,
@@ -19,7 +19,7 @@ export class userModel {
 
       if (error) throw new Error(error.message)
 
-      return data
+      return user
     } catch (error) {
       throw new Error(error.message)
     }
@@ -32,19 +32,18 @@ export class userModel {
       query = query.eq('email', email)
     }
 
-    const { data, error } = await query
+    const { data: users, error } = await query
 
     if (error) throw new Error(error.message)
 
-    return data
+    return users
   }
 
   static async getById ({ id }){
-    const { data, error } = await supabase.from('usuarios').select().eq('id', id)
+    const { data: user, error } = await supabase.from('usuarios').select().eq('id', id)
     if (error) throw new Error(error.message)
 
-    return data
-
+    return user
   }
 
   static async updateUser ({ id, input }) {
@@ -65,11 +64,11 @@ export class userModel {
     }
 
     try {
-      const { data, error } = await supabase.from('usuarios').update(updateData).eq('id', id).select()
+      const { data: user, error } = await supabase.from('usuarios').update(updateData).eq('id', id).select()
 
       if (error) throw new Error(error.message)
 
-      return data
+      return user
     } catch (error) {
       throw new Error(error.message)
     }
