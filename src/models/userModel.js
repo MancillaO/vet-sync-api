@@ -17,11 +17,11 @@ export class userModel {
         password: hashedPassword
       }).select()
 
-      if (error) throw error
+      if (error) throw new Error(error.message)
 
       return data
     } catch (error) {
-      throw error
+      throw new Error(error.message)
     }
   }
 
@@ -34,14 +34,14 @@ export class userModel {
 
     const { data, error } = await query
 
-    if (error) throw error
+    if (error) throw new Error(error.message)
 
     return data
   }
 
   static async getById ({ id }){
     const { data, error } = await supabase.from('usuarios').select().eq('id', id)
-    if (error) throw error
+    if (error) throw new Error(error.message)
 
     return data
 
@@ -67,11 +67,11 @@ export class userModel {
     try {
       const { data, error } = await supabase.from('usuarios').update(updateData).eq('id', id).select()
 
-      if (error) throw error
+      if (error) throw new Error(error.message)
 
       return data
     } catch (error) {
-      throw error
+      throw new Error(error.message)
     }
   }
 
@@ -79,12 +79,12 @@ export class userModel {
     try {
       const { error } = await supabase.from('usuarios').update({ activo: false }).eq('id', id)
 
-      if (error) throw error
+      if (error) throw new Error(error.message)
 
       const deletedUser = await this.getById({ id })
       return deletedUser
     } catch (error) {
-      throw error
+      throw new Error(error.message)
     }
   }
 }

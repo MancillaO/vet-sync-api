@@ -1,10 +1,7 @@
 import { Router } from 'express'
-import { authenticateToken } from '../middlewares/auth.js'
 import { PetController } from '../controllers/petController.js'
 
 export const petRouter = Router()
-
-petRouter.use(authenticateToken)
 
 petRouter.post('/', PetController.addPet)
 
