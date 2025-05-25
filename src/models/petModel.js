@@ -5,7 +5,7 @@ export class petModel {
     const { nombre, cliente_id, especie_id, raza_id, edad, sexo } = input
 
     try {
-      const { data, error } = await supabase.from('mascotas').insert({
+      const { data: pet, error } = await supabase.from('mascotas').insert({
         nombre,
         cliente_id,
         especie_id,
@@ -16,7 +16,7 @@ export class petModel {
 
       if (error) throw new Error(error.message)
 
-      return data
+      return pet
     } catch (error) {
       throw new Error(error.message)
     }
@@ -24,11 +24,11 @@ export class petModel {
 
   static async getAllPets (){
     try {
-      const { data, error } = await supabase.from('mascotas').select()
+      const { data: pets, error } = await supabase.from('mascotas').select()
 
       if (error) throw new Error(error.message)
 
-      return data
+      return pets
     } catch (error) {
       throw new Error(error.message)
     }
@@ -36,11 +36,11 @@ export class petModel {
 
   static async getDetailedPet ({ clienteId }) {
     try {
-      const { data, error } = await supabase.rpc('obtener_mascotas', { p_cliente_id: clienteId ?? null })
+      const { data: pets, error } = await supabase.rpc('obtener_mascotas', { p_cliente_id: clienteId ?? null })
 
       if (error) throw new Error(error.message)
 
-      return data
+      return pets
     } catch (error) {
       throw new Error(error.message)
     }
@@ -48,11 +48,11 @@ export class petModel {
 
   static async getById ({ id }) {
     try {
-      const { data, error } = await supabase.from('mascotas').select().eq('id', id)
+      const { data: pet, error } = await supabase.from('mascotas').select().eq('id', id)
 
       if (error) throw new Error(error.message)
 
-      return data
+      return pet
     } catch (error) {
       throw new Error(error.message)
     }
@@ -73,11 +73,11 @@ export class petModel {
     }
 
     try {
-      const { data, error } = await supabase.from('mascotas').update(updateData).eq('id', id).select()
+      const { data: pet, error } = await supabase.from('mascotas').update(updateData).eq('id', id).select()
 
       if (error) throw new Error(error.message)
 
-      return data
+      return pet
     } catch (error) {
       throw new Error(error.message)
     }
