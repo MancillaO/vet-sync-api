@@ -22,7 +22,7 @@ export class UserController {
 
     const users = await userModel.getAllUsers({ email })
 
-    if (users.length === 0){ // TODO: Cambiar validacion dependiendo de la respuesta
+    if (users.length === 0){
       return res.status(404).json({ error: 'Users not found' })
     }
     res.json({ message: 'Users found', data: users })

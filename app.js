@@ -1,8 +1,8 @@
 import express from 'express'
+import morgan from 'morgan'
 import { corsMiddleware } from './src/middlewares/cors.js'
 import { router } from './src/routes/index.js'
 import { port, logger } from './config.js'
-import morgan from 'morgan'
 
 const app = express()
 
