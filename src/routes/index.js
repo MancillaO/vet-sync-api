@@ -5,6 +5,7 @@ import { authRouter } from './authRouter.js'
 import { petRouter } from './petRouter.js'
 import { speciesRouter } from './speciesRouter.js'
 import { breedsRouter } from './breedsRouter.js'
+import { vetRouter } from './vetRouter.js'
 
 export const router = Router()
 
@@ -13,3 +14,4 @@ router.use('/auth', authRouter)
 router.use('/species', authenticateToken, speciesRouter)
 router.use('/breeds', authenticateToken, breedsRouter)
 router.use('/pets', authenticateToken, petRouter)
+router.use('/vets', authenticateToken, vetRouter)
