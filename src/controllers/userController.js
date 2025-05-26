@@ -48,22 +48,33 @@ export class UserController {
       return res.status(422).json({ error: JSON.parse(result.error.message) })
     }
 
-    const updatedUser = await userModel.updateUser({ id, input: result.data })
+    try {
+      const updatedUser = await userModel.updateUser({ id, input: result.data })
 
-    if (updatedUser.length === 0){
-      return res.status(404).json({ error: 'User not found' })
+      if (updatedUser.length === 0){
+        return res.status(404).json({ error: 'User not found' })
+      }
+
+      res.json({ message: 'User updated', data: updatedUser })
+    } catch (error) {
+      return res.status(500).json({ error: error.message })
     }
-    res.json({ message: 'User updated', data: updatedUser })
   }
 
   static async deleteUser (req, res){
     const { id } = req.params
 
-    const deletedUser = await userModel.deleteUser({ id })
+    try {
+      const deletedUser = await userModel.deleteUser({ id })
 
-    if (deletedUser.length === 0){
-      return res.status(404).json({ error: 'User not found' })
+      if (deletedUser.length === 0){
+        return res.status(404).json({ error: 'User not found' })
+      }
+
+      res.json({ message: 'User deleted', data: deletedUser })
+
+    } catch (error) {
+      return res.status(500).json({ error: error.message })
     }
-    res.json({ message: 'User deleted', data: deletedUser })
   }
 }
