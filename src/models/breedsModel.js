@@ -1,7 +1,7 @@
 import { supabase } from './connection.js'
 
-export class breedsModel{
-  static async getAllBreeds (){
+export class breedsModel {
+  static async getAllBreeds () {
     const { data: breeds, error } = await supabase.from('razas').select()
 
     if (error) throw new Error(error.message)
@@ -29,5 +29,4 @@ export class breedsModel{
 
     return breeds
   }
-
 }

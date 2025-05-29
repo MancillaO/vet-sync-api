@@ -1,7 +1,7 @@
 import { supabase } from './connection.js'
 
-export class vetModel{
-  static async addVet ({ input }){
+export class vetModel {
+  static async addVet ({ input }) {
     const { nombre, apellido, email, telefono, especialidad } = input
 
     try {
@@ -21,7 +21,7 @@ export class vetModel{
     }
   }
 
-  static async getAllVets (){
+  static async getAllVets () {
     const { data: vets, error } = await supabase.from('profesionales').select()
 
     if (error) throw new Error(error.message)
@@ -29,7 +29,7 @@ export class vetModel{
     return vets
   }
 
-  static async getById ({ id }){
+  static async getById ({ id }) {
     const { data: vet, error } = await supabase.from('profesionales').select().eq('id', id)
 
     if (error) throw new Error(error.message)
@@ -37,14 +37,14 @@ export class vetModel{
     return vet
   }
 
-  static async updateVet ({ id, input }){
+  static async updateVet ({ id, input }) {
     const updateData = {}
 
-    input.nombre ? updateData.nombre = input.nombre : null
-    input.apellido ? updateData.apellido = input.apellido : null
-    input.email ? updateData.email = input.email : null
-    input.telefono ? updateData.telefono = input.telefono : null
-    input.especialidad ? updateData.especialidad = input.especialidad : null
+    if (input.nombre) updateData.nombre = input.nombre
+    if (input.apellido) updateData.apellido = input.apellido
+    if (input.email) updateData.email = input.email
+    if (input.telefono) updateData.telefono = input.telefono
+    if (input.especialidad) updateData.especialidad = input.especialidad
 
     if (Object.keys(updateData).length === 0) {
       return await this.getById({ id })
@@ -61,7 +61,7 @@ export class vetModel{
     }
   }
 
-  static async deleteVet ({ id }){
+  static async deleteVet ({ id }) {
     try {
       const { error } = await supabase.from('profesionales').update({ activo: false }).eq('id', id)
 

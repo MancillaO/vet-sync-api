@@ -1,7 +1,7 @@
 import { supabase } from './connection.js'
 
-export class speciesModel{
-  static async getAllSpecies (){
+export class speciesModel {
+  static async getAllSpecies () {
     const { data: species, error } = await supabase.from('especies').select()
 
     if (error) throw new Error(error.message)
