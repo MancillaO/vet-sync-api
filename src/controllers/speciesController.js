@@ -4,7 +4,7 @@ export class SpeciesController {
   static async getAllSpecies (req, res) {
     const species = await speciesModel.getAllSpecies()
 
-    if (species.length === 0){
+    if (species.length === 0) {
       return res.status(404).json({ error: 'Species not found' })
     }
     res.json({ message: 'Species found', data: species })
@@ -15,7 +15,7 @@ export class SpeciesController {
 
     const species = await speciesModel.getById({ id })
 
-    if (!species){
+    if (!species) {
       return res.status(404).json({ error: 'Species not found' })
     }
     res.json({ message: 'Species found', data: species })
@@ -26,7 +26,7 @@ export class SpeciesController {
 
     const species = await speciesModel.getByName({ name })
 
-    if (!species){
+    if (!species) {
       return res.status(404).json({ error: 'Species not found' })
     }
     res.json({ message: 'Species found', data: species })

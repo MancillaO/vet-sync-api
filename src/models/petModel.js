@@ -1,7 +1,7 @@
 import { supabase } from './connection.js'
 
 export class petModel {
-  static async addPet ({ input }){
+  static async addPet ({ input }) {
     const { nombre, cliente_id, especie_id, raza_id, edad, sexo } = input
 
     try {
@@ -22,7 +22,7 @@ export class petModel {
     }
   }
 
-  static async getAllPets (){
+  static async getAllPets () {
     try {
       const { data: pets, error } = await supabase.from('mascotas').select()
 
@@ -61,12 +61,12 @@ export class petModel {
   static async updatePet ({ id, input }) {
     const updateData = {}
 
-    input.nombre ? updateData.nombre = input.nombre : null
-    input.cliente_id ? updateData.cliente_id = input.cliente_id : null
-    input.especie_id ? updateData.especie_id = input.especie_id : null
-    input.raza_id ? updateData.raza_id = input.raza_id : null
-    input.edad ? updateData.edad = input.edad : null
-    input.sexo ? updateData.sexo = input.sexo : null
+    if (input.nombre) updateData.nombre = input.nombre
+    if (input.cliente_id) updateData.cliente_id = input.cliente_id
+    if (input.especie_id) updateData.especie_id = input.especie_id
+    if (input.raza_id) updateData.raza_id = input.raza_id
+    if (input.edad) updateData.edad = input.edad
+    if (input.sexo) updateData.sexo = input.sexo
 
     if (Object.keys(updateData).length === 0) {
       return await this.getById({ id })
