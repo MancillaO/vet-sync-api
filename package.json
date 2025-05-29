@@ -8,7 +8,8 @@
     "dev": "node --watch app.js",
     "start": "node app.js",
     "lint": "eslint .",
-    "lint:fix": "eslint . --fix"
+    "lint:fix": "eslint . --fix",
+    "lint:standard": "eslint . --config eslint.config.js"
   },
   "keywords": [],
   "author": "",
