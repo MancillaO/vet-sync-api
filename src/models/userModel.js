@@ -2,8 +2,7 @@ import { supabase } from './connection.js'
 import bcrypt from 'bcrypt'
 
 export class userModel {
-
-  static async createUser ({ input }){
+  static async createUser ({ input }) {
     const { nombre, apellido, email, password, telefono, direccion } = input
     const hashedPassword = await bcrypt.hash(password, 10)
 
@@ -39,7 +38,7 @@ export class userModel {
     return users
   }
 
-  static async getById ({ id }){
+  static async getById ({ id }) {
     const { data: user, error } = await supabase.from('usuarios').select().eq('id', id)
     if (error) throw new Error(error.message)
 
@@ -49,11 +48,11 @@ export class userModel {
   static async updateUser ({ id, input }) {
     const updateData = {}
 
-    input.nombre ? updateData.nombre = input.nombre : null
-    input.apellido ? updateData.apellido = input.apellido : null
-    input.email ? updateData.email = input.email : null
-    input.telefono ? updateData.telefono = input.telefono : null
-    input.direccion ? updateData.direccion = input.direccion : null
+    if (input.nombre) updateData.nombre = input.nombre
+    if (input.apellido) updateData.apellido = input.apellido
+    if (input.email) updateData.email = input.email
+    if (input.telefono) updateData.telefono = input.telefono
+    if (input.direccion) updateData.direccion = input.direccion
 
     if (input.password) {
       updateData.password = await bcrypt.hash(input.password, 10)

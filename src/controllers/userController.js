@@ -5,7 +5,7 @@ export class UserController {
   static async createUser (req, res) {
     const result = validateUser(req.body)
 
-    if (result.error){
+    if (result.error) {
       return res.status(422).json({ error: JSON.parse(result.error.message) })
     }
 
@@ -22,7 +22,7 @@ export class UserController {
 
     const users = await userModel.getAllUsers({ email })
 
-    if (users.length === 0){
+    if (users.length === 0) {
       return res.status(404).json({ error: 'Users not found' })
     }
     res.json({ message: 'Users found', data: users })
@@ -34,24 +34,24 @@ export class UserController {
     const user = await userModel.getById({ id })
     console.log(user)
 
-    if (user.length === 0){
+    if (user.length === 0) {
       return res.status(404).json({ error: 'User not found' })
     }
     res.json({ message: 'User found', data: user })
   }
 
-  static async updateUser (req, res){
+  static async updateUser (req, res) {
     const { id } = req.params
     const result = validatePartialUser(req.body)
 
-    if (result.error){
+    if (result.error) {
       return res.status(422).json({ error: JSON.parse(result.error.message) })
     }
 
     try {
       const updatedUser = await userModel.updateUser({ id, input: result.data })
 
-      if (updatedUser.length === 0){
+      if (updatedUser.length === 0) {
         return res.status(404).json({ error: 'User not found' })
       }
 
@@ -61,18 +61,17 @@ export class UserController {
     }
   }
 
-  static async deleteUser (req, res){
+  static async deleteUser (req, res) {
     const { id } = req.params
 
     try {
       const deletedUser = await userModel.deleteUser({ id })
 
-      if (deletedUser.length === 0){
+      if (deletedUser.length === 0) {
         return res.status(404).json({ error: 'User not found' })
       }
 
       res.json({ message: 'User deleted', data: deletedUser })
-
     } catch (error) {
       return res.status(500).json({ error: error.message })
     }
