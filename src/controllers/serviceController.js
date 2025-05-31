@@ -40,6 +40,7 @@ export class ServiceController {
     }
 
     try {
+      // TODO: Validate category exists
       const service = await serviceModel.addService({ input: result.data })
       return res.status(201).json({ message: 'Service created', data: service })
     } catch (error) {
@@ -56,6 +57,7 @@ export class ServiceController {
     }
 
     try {
+      // TODO: Validate category exists
       const service = await serviceModel.updateService({ id, input: result.data })
       return res.status(200).json({ message: 'Service updated', data: service })
     } catch (error) {
