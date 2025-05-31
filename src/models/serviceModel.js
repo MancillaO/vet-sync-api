@@ -69,11 +69,12 @@ export class serviceModel {
 
   static async deleteService ({ id }) {
     try {
-      const { data: deletedService, error } = await supabase.from('servicios').delete().eq('id', id).select()
+      const { data: service, error } = await supabase.from('servicios')
+        .update({ activo: false }).eq('id', id).select()
 
       if (error) throw error
 
-      return deletedService
+      return service
     } catch (error) {
       throw error
     }
