@@ -21,7 +21,9 @@ export class categoryModel {
 
   static async getById ({ id }) {
     try {
-      const { data: category, error } = await supabase.from('categorias_servicio').select().eq('id', id).select()
+      const { data: category, error } = await supabase.from('categorias_servicio')
+        .select()
+        .eq('id', id)
 
       if (error) throw new Error(error.message)
 
