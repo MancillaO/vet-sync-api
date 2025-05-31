@@ -25,8 +25,6 @@ export class categoryModel {
         .select()
         .eq('id', id)
 
-      console.log(category)
-
       if (error) throw new Error(error.message)
 
       return category
