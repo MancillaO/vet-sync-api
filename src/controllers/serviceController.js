@@ -1,5 +1,6 @@
 import { validateService, validatePartialService } from '../schemas/serviceSchema.js'
 import { serviceModel } from '../models/serviceModel.js'
+import { categoryModel } from '../models/categoryModel.js'
 
 export class ServiceController {
   static async getAllServices (req, res) {
@@ -55,8 +56,11 @@ export class ServiceController {
       return res.status(422).json({ error: JSON.parse(result.error.message) })
     }
 
+    const category = await categoryModel.getById({ id: result.data.categoria_id })
+
+    if (category.length === 0) return res.status(404).json({ error: 'Category not found' })
+
     try {
-      // TODO: Validate category exists
       const service = await serviceModel.addService({ input: result.data })
       return res.status(201).json({ message: 'Service created', data: service })
     } catch (error) {
@@ -72,8 +76,12 @@ export class ServiceController {
       return res.status(422).json({ error: JSON.parse(result.error.message) })
     }
 
+    if (result.data.categoria_id) {
+      const category = await categoryModel.getById({ id: result.data.categoria_id })
+      if (category.length === 0) return res.status(404).json({ error: 'Category not found' })
+    }
+
     try {
-      // TODO: Validate category exists
       const service = await serviceModel.updateService({ id, input: result.data })
       return res.status(200).json({ message: 'Service updated', data: service })
     } catch (error) {
