@@ -31,6 +31,18 @@ export class serviceModel {
     }
   }
 
+  static async getActiveServices ({ active }) {
+    try {
+      const { data: services, error } = await supabase.from('servicios').select().eq('activo', active)
+
+      if (error) throw error
+
+      return services
+    } catch (error) {
+      throw error
+    }
+  }
+
   static async addService ({ input }) {
     try {
       const { data: service, error } = await supabase.from('servicios').insert([input]).select()

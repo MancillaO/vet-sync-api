@@ -5,6 +5,7 @@ export const servicesRouter = Router()
 
 servicesRouter.get('/', ServiceController.getAllServices)
 servicesRouter.get('/:id', ServiceController.getById)
+servicesRouter.get('/active/:active', ServiceController.getActiveServices)
 
 servicesRouter.post('/', ServiceController.addService)
 
