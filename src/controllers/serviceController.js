@@ -32,6 +32,22 @@ export class ServiceController {
     }
   }
 
+  static async getActiveServices (req, res) {
+    const { active } = req.params
+
+    try {
+      const services = await serviceModel.getActiveServices({ active })
+
+      if (services.length === 0) {
+        return res.status(404).json({ error: 'Services not found' })
+      }
+
+      res.json({ message: 'Services found', data: services })
+    } catch (error) {
+      return res.status(500).json({ error: error.message })
+    }
+  }
+
   static async addService (req, res) {
     const result = validateService(req.body)
 
