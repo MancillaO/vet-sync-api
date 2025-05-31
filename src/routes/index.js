@@ -12,8 +12,11 @@ export const router = Router()
 
 router.use('/users', userRouter)
 router.use('/auth', authRouter)
-router.use('/species', authenticateToken, speciesRouter)
-router.use('/breeds', authenticateToken, breedsRouter)
-router.use('/pets', authenticateToken, petRouter)
-router.use('/vets', authenticateToken, vetRouter)
-router.use('/schedules', authenticateToken, scheduleRouter)
+
+router.use(authenticateToken)
+
+router.use('/species', speciesRouter)
+router.use('/breeds', breedsRouter)
+router.use('/pets', petRouter)
+router.use('/vets', vetRouter)
+router.use('/schedules', scheduleRouter)
