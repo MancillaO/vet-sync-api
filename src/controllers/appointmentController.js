@@ -32,12 +32,45 @@ export class AppointmentController {
     }
   }
 
+  static async getDetailedAppointments (req, res) {
+    try {
+      const appointments = await AppointmentModel.getDetailedAppointments()
+
+      if (appointments.length === 0) {
+        return res.status(404).json({ error: 'Appointments not found' })
+      }
+
+      return res.json({ message: 'Appointments found', data: appointments })
+    } catch (error) {
+      return res.status(500).json({ error: error.message })
+    }
+  }
+
+  static async getDetailedAppointment (req, res) {
+    const { id } = req.params
+
+    try {
+      const appointment = await AppointmentModel.getDetailedAppointment({ id })
+
+      if (appointment.length === 0) {
+        return res.status(404).json({ error: 'Appointment not found' })
+      }
+
+      return res.json({ message: 'Appointment found', data: appointment })
+    } catch (error) {
+      return res.status(500).json({ error: error.message })
+    }
+  }
+
   static async addAppointment (req, res) {
     const result = validateAppointment(req.body)
 
     if (result.error) {
       return res.status(422).json({ error: JSON.parse(result.error.message) })
     }
+
+    // TODO: Validar que la mascota pertenece al cliente
+    // TODO: Validar fecha
 
     try {
       const appointment = await AppointmentModel.addAppointment({ input: result.data })

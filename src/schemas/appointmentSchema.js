@@ -33,7 +33,7 @@ const AppointmentSchema = z.object({
     .max(20, 'El estado no debe exceder los 20 caracteres')
     .default('Programada'),
 
-  fecha_cita: z.string({
+  fecha: z.string({
     required_error: 'La fecha de la cita es obligatoria',
     invalid_type_error: 'La fecha de la cita debe ser una cadena de texto válida'
   })
@@ -44,7 +44,7 @@ const AppointmentSchema = z.object({
       message: 'La fecha debe tener el formato YYYY-MM-DD'
     }),
 
-  hora_cita: z.string({
+  hora_inicio: z.string({
     required_error: 'La hora de la cita es obligatoria',
     invalid_type_error: 'La hora de la cita debe ser una cadena de texto válida'
   })
