@@ -9,6 +9,7 @@ import { vetRouter } from './vetRouter.js'
 import { scheduleRouter } from './scheduleRouter.js'
 import { servicesRouter } from './servicesRouter.js'
 import { categoriesRouter } from './categoriesRouter.js'
+import { appointmentsRouter } from './appointmentsRouter.js'
 
 export const router = Router()
 
@@ -24,3 +25,4 @@ router.use('/vets', vetRouter)
 router.use('/schedules', scheduleRouter)
 router.use('/categories', categoriesRouter)
 router.use('/services', servicesRouter)
+router.use('/appointments', appointmentsRouter)
