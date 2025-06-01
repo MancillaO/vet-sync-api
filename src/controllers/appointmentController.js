@@ -39,6 +39,9 @@ export class AppointmentController {
       return res.status(422).json({ error: JSON.parse(result.error.message) })
     }
 
+    // TODO: Validar que la mascota pertenece al cliente
+    // TODO: Validar fecha
+
     try {
       const appointment = await AppointmentModel.addAppointment({ input: result.data })
       return res.status(201).json({ message: 'Appointment created', data: appointment })
