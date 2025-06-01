@@ -25,6 +25,33 @@ export class AppointmentModel {
     }
   }
 
+  static async getDetailedAppointments () {
+    try {
+      const { data: appointments, error } = await supabase.rpc('obtener_citas_detalle')
+
+      if (error) throw error
+
+      return appointments
+    } catch (error) {
+      throw error
+    }
+  }
+
+  static async getDetailedAppointment ({ id }) {
+    try {
+      const { data: appointment, error } = await supabase.rpc(
+        'obtener_citas_detalle',
+        { p_cita_id: id ?? null }
+      )
+
+      if (error) throw error
+
+      return appointment
+    } catch (error) {
+      throw error
+    }
+  }
+
   static async addAppointment ({ input }) {
     try {
       const { data: appointment, error } = await supabase.from('citas').insert([input]).select()
