@@ -75,4 +75,20 @@ export class scheduleModel {
       throw new Error(error.message)
     }
   }
+
+  static async getScheduleForDay ({ profesionalId, dayPattern }) {
+    try {
+      const { data: schedules, error } = await supabase
+        .from('horarios_profesionales')
+        .select()
+        .eq('profesional_id', profesionalId)
+        .ilike('dias_trabajo', dayPattern)
+
+      if (error) throw new Error(error.message)
+
+      return schedules
+    } catch (error) {
+      throw new Error(error.message)
+    }
+  }
 }
