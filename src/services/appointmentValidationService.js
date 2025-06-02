@@ -112,8 +112,6 @@ async function validateAppointmentTime (appointmentData) {
     const duracionMinutos = servicio[0].duracion_minutos || 30 // Fallback a 30 minutos si no hay duración
     const hora_fin = calcularHoraFin(hora_inicio, duracionMinutos)
 
-    console.log(`Hora de fin calculada: ${hora_fin} basada en duración: ${duracionMinutos} minutos`)
-
     const dayOfWeek = new Date(fecha).getDay()
     const dayMap = {
       0: 'D', // Domingo

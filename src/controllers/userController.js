@@ -32,7 +32,6 @@ export class UserController {
     const { id } = req.params
 
     const user = await userModel.getById({ id })
-    console.log(user)
 
     if (user.length === 0) {
       return res.status(404).json({ error: 'User not found' })
