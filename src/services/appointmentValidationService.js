@@ -2,6 +2,7 @@ import { petModel } from '../models/petModel.js'
 import { vetModel } from '../models/vetModel.js'
 import { AppointmentModel } from '../models/appointmentModel.js'
 import { scheduleModel } from '../models/scheduleModel.js'
+import { serviceModel } from '../models/serviceModel.js'
 
 export async function runValidations (data) {
   // Acumula errores para devolver todas las validaciones fallidas juntas
@@ -85,16 +86,33 @@ function validateDate (dateString) {
 
 async function validateAppointmentTime (appointmentData) {
   try {
-    const { profesional_id, cliente_id, fecha, hora_inicio, hora_fin } = appointmentData
+    const { profesional_id, cliente_id, fecha, hora_inicio, servicio_id } = appointmentData
 
     // Verificaciones básicas de los datos de hora
-    if (!hora_fin) {
-      return { error: 'Se requiere especificar la hora de fin de la cita' }
+    if (!hora_inicio) {
+      return { error: 'Se requiere especificar la hora de inicio de la cita' }
     }
 
-    if (!isValidTimeFormat(hora_inicio) || !isValidTimeFormat(hora_fin)) {
+    if (!isValidTimeFormat(hora_inicio)) {
       return { error: 'El formato de hora debe ser HH:MM' }
     }
+
+    if (!servicio_id) {
+      return { error: 'Se requiere especificar el servicio para la cita' }
+    }
+
+    // Obtener la duración del servicio usando serviceModel
+    const servicio = await serviceModel.getById({ id: servicio_id })
+
+    if (!servicio || servicio.length === 0) {
+      return { error: 'No se pudo obtener la información del servicio' }
+    }
+
+    // Calcular hora_fin basada en la duración del servicio (simular el trigger de BD)
+    const duracionMinutos = servicio[0].duracion_minutos || 30 // Fallback a 30 minutos si no hay duración
+    const hora_fin = calcularHoraFin(hora_inicio, duracionMinutos)
+
+    console.log(`Hora de fin calculada: ${hora_fin} basada en duración: ${duracionMinutos} minutos`)
 
     const dayOfWeek = new Date(fecha).getDay()
     const dayMap = {
@@ -140,11 +158,12 @@ async function validateAppointmentTime (appointmentData) {
     }
 
     // 2. Verificar si hay citas superpuestas para el mismo profesional
+    // Usamos hora_fin calculada con la duración del servicio
     const overlappingProfessionalAppointments = await AppointmentModel.findOverlappingAppointments({
       profesional_id,
       fecha,
       hora_inicio,
-      hora_fin
+      hora_fin // Este valor es calculado, no proviene de la petición
     })
 
     if (overlappingProfessionalAppointments.length > 0) {
@@ -154,11 +173,12 @@ async function validateAppointmentTime (appointmentData) {
     }
 
     // 3. Verificar si hay citas superpuestas para el mismo cliente
+    // Usamos hora_fin calculada con la duración del servicio
     const overlappingClientAppointments = await AppointmentModel.findOverlappingAppointments({
       cliente_id,
       fecha,
       hora_inicio,
-      hora_fin
+      hora_fin // Este valor es calculado, no proviene de la petición
     })
 
     if (overlappingClientAppointments.length > 0) {
@@ -189,4 +209,18 @@ function checkIfTimeIsWithinRange (checkTime, startTime, endTime) {
 
 function isValidTimeFormat (timeStr) {
   return /^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$/.test(timeStr)
+}
+
+function calcularHoraFin (horaInicio, duracionMinutos) {
+  const [horas, minutos] = horaInicio.split(':').map(Number)
+
+  // Calcular minutos totales
+  const minutosTotal = horas * 60 + minutos + duracionMinutos
+
+  // Convertir de nuevo a formato HH:MM
+  const horasFin = Math.floor(minutosTotal / 60)
+  const minutosFin = minutosTotal % 60
+
+  // Formatear con ceros a la izquierda si es necesario
+  return `${horasFin.toString().padStart(2, '0')}:${minutosFin.toString().padStart(2, '0')}`
 }
