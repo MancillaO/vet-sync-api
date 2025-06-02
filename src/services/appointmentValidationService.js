@@ -3,6 +3,7 @@ import { vetModel } from '../models/vetModel.js'
 import { AppointmentModel } from '../models/appointmentModel.js'
 import { scheduleModel } from '../models/scheduleModel.js'
 import { serviceModel } from '../models/serviceModel.js'
+import { checkIfTimeIsWithinRange, isValidTimeFormat, calcularHoraFin } from '../utils/timeUtils.js'
 
 export async function runValidations (data) {
   // Acumula errores para devolver todas las validaciones fallidas juntas
@@ -194,33 +195,5 @@ async function validateAppointmentTime (appointmentData) {
   }
 }
 
-function checkIfTimeIsWithinRange (checkTime, startTime, endTime) {
-  const convertToMinutes = (timeStr) => {
-    const [hours, minutes] = timeStr.split(':').map(Number)
-    return hours * 60 + minutes
-  }
-
-  const timeMinutes = convertToMinutes(checkTime)
-  const startMinutes = convertToMinutes(startTime)
-  const endMinutes = convertToMinutes(endTime)
-
-  return timeMinutes >= startMinutes && timeMinutes <= endMinutes
-}
-
-function isValidTimeFormat (timeStr) {
-  return /^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$/.test(timeStr)
-}
-
-function calcularHoraFin (horaInicio, duracionMinutos) {
-  const [horas, minutos] = horaInicio.split(':').map(Number)
-
-  // Calcular minutos totales
-  const minutosTotal = horas * 60 + minutos + duracionMinutos
-
-  // Convertir de nuevo a formato HH:MM
-  const horasFin = Math.floor(minutosTotal / 60)
-  const minutosFin = minutosTotal % 60
-
-  // Formatear con ceros a la izquierda si es necesario
-  return `${horasFin.toString().padStart(2, '0')}:${minutosFin.toString().padStart(2, '0')}`
-}
+// Las funciones checkIfTimeIsWithinRange, isValidTimeFormat y calcularHoraFin
+// han sido movidas a src/utils/timeUtils.js
