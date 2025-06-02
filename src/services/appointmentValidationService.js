@@ -95,3 +95,35 @@ export async function validateVet (vet_id) {
     }
   }
 }
+
+/**
+ * Valida que la fecha no sea una fecha pasada
+ * @param {string} dateString - Fecha en formato string (YYYY-MM-DD)
+ * @returns {Object} Resultado de la validación
+ */
+export function validateDate (dateString) {
+  try {
+    const appointmentDate = new Date(dateString)
+    const today = new Date()
+
+    today.setHours(0, 0, 0, 0)
+    appointmentDate.setHours(0, 0, 0, 0)
+
+    if (appointmentDate < today) {
+      return {
+        isValid: false,
+        message: 'La fecha no puede ser anterior al día de hoy'
+      }
+    }
+
+    return {
+      isValid: true,
+      message: 'Validación de fecha exitosa'
+    }
+  } catch (error) {
+    return {
+      isValid: false,
+      message: `Error al validar la fecha: ${error.message}`
+    }
+  }
+}
