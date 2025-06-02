@@ -1,5 +1,6 @@
 import { validateAppointment, validatePartialAppointment } from '../schemas/appointmentSchema.js'
 import { AppointmentModel } from '../models/appointmentModel.js'
+import { validatePet, validateVet, validateDate, validate } from '../services/appointmentValidationService.js'
 
 export class AppointmentController {
   static async getAllAppointments (req, res) {
@@ -69,8 +70,20 @@ export class AppointmentController {
       return res.status(422).json({ error: JSON.parse(result.error.message) })
     }
 
-    // TODO: Validar que la mascota pertenece al cliente
-    // TODO: Validar fecha
+    const validations = [
+      // Validar que la mascota exista y pertenezca al cliente
+      () => validatePet(result.data.mascota_id, result.data.cliente_id),
+      // Validar que el veterinario exista y esté activo
+      () => validateVet(result.data.profesional_id),
+      // Validar que la fecha no sea una fecha pasada
+      () => validateDate(result.data.fecha)
+    ]
+
+    const validationResult = await validate(validations)
+
+    if (!validationResult.isValid) {
+      return res.status(400).json({ error: validationResult.message })
+    }
 
     try {
       const appointment = await AppointmentModel.addAppointment({ input: result.data })
