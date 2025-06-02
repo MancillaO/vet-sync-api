@@ -1,129 +1,74 @@
 import { petModel } from '../models/petModel.js'
 import { vetModel } from '../models/vetModel.js'
 
-/**
- * Ejecuta una serie de validaciones secuencialmente
- * @param {Array} validations - Array de funciones de validación a ejecutar
- * @returns {Object} Resultado de la validación con isValid y message
- */
-export async function validate (validations) {
-  const initialPromise = Promise.resolve({
-    isValid: true,
-    message: 'Todas las validaciones pasaron exitosamente'
-  })
+export async function runValidations (data) {
+  const errors = []
 
-  return validations.reduce(
-    (promiseChain, currentValidation) => {
-      return promiseChain.then(async (result) => {
-        if (!result.isValid) {
-          return result
-        }
-        return currentValidation()
-      })
-    },
-    initialPromise
-  )
+  const pet = await validatePet(data.mascota_id, data.cliente_id)
+  if (pet.error) errors.push(pet.error)
+
+  const vet = await validateVet(data.profesional_id)
+  if (vet.error) errors.push(vet.error)
+
+  const date = validateDate(data.fecha)
+  if (date.error) errors.push(date.error)
+
+  return {
+    isValid: errors.length === 0,
+    errors
+  }
 }
 
-/**
- * Valida que la mascota exista y pertenezca al cliente especificado
- * @param {number} pet_id - ID de la mascota
- * @param {number} client_id - ID del cliente
- * @returns {Object} Resultado de la validación
- */
-export async function validatePet (pet_id, client_id) {
+async function validatePet (petId, clientId) {
   try {
-    const pet = await petModel.getById({ id: pet_id })
+    const pet = await petModel.getById({ id: petId })
 
     if (!pet || pet.length === 0) {
-      return {
-        isValid: false,
-        message: 'La mascota no existe'
-      }
+      return { error: 'La mascota no existe' }
     }
 
-    if (pet[0].cliente_id !== client_id) {
-      return {
-        isValid: false,
-        message: 'La mascota no pertenece al cliente especificado'
-      }
+    if (pet[0].cliente_id !== clientId) {
+      return { error: 'La mascota no pertenece al cliente' }
     }
 
-    return {
-      isValid: true,
-      message: 'Validación exitosa'
-    }
+    return { error: null }
   } catch (error) {
-    return {
-      isValid: false,
-      message: `Error al validar la mascota: ${error.message}`
-    }
+    return { error: 'Error al validar la mascota' }
   }
 }
 
-/**
- * Valida que el veterinario exista y esté activo
- * @param {number} vet_id - ID del veterinario
- * @returns {Object} Resultado de la validación
- */
-export async function validateVet (vet_id) {
+async function validateVet (vetId) {
   try {
-    const vet = await vetModel.getById({ id: vet_id })
+    const vet = await vetModel.getById({ id: vetId })
 
     if (!vet || vet.length === 0) {
-      return {
-        isValid: false,
-        message: 'El veterinario no existe'
-      }
+      return { error: 'El veterinario no existe' }
     }
 
-    if (vet[0].activo === false) {
-      return {
-        isValid: false,
-        message: 'El veterinario no está activo'
-      }
+    if (!vet[0].activo) {
+      return { error: 'El veterinario no está activo' }
     }
 
-    return {
-      isValid: true,
-      message: 'Validación exitosa'
-    }
+    return { error: null }
   } catch (error) {
-    return {
-      isValid: false,
-      message: `Error al validar el veterinario: ${error.message}`
-    }
+    return { error: 'Error al validar el veterinario' }
   }
 }
 
-/**
- * Valida que la fecha no sea una fecha pasada
- * @param {string} dateString - Fecha en formato string (YYYY-MM-DD)
- * @returns {Object} Resultado de la validación
- */
-export function validateDate (dateString) {
+function validateDate (dateString) {
   try {
-    const appointmentDate = new Date(dateString)
     const today = new Date()
-
     today.setHours(0, 0, 0, 0)
+
+    const appointmentDate = new Date(dateString)
     appointmentDate.setHours(0, 0, 0, 0)
 
     if (appointmentDate < today) {
-      return {
-        isValid: false,
-        message: 'La fecha no puede ser anterior al día de hoy'
-      }
+      return { error: 'La fecha no puede ser pasada' }
     }
 
-    return {
-      isValid: true,
-      message: 'Validación de fecha exitosa'
-    }
+    return { error: null }
   } catch (error) {
-    return {
-      isValid: false,
-      message: `Error al validar la fecha: ${error.message}`
-    }
+    return { error: 'Fecha inválida' }
   }
 }
