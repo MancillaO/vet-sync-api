@@ -1,9 +1,9 @@
-import { petModel } from '../models/petModel.js'
-import { vetModel } from '../models/vetModel.js'
-import { AppointmentModel } from '../models/appointmentModel.js'
-import { scheduleModel } from '../models/scheduleModel.js'
-import { serviceModel } from '../models/serviceModel.js'
-import { checkIfTimeIsWithinRange, isValidTimeFormat, calcularHoraFin } from '../utils/timeUtils.js'
+import { petModel } from '#models/petModel.js'
+import { vetModel } from '#models/vetModel.js'
+import { AppointmentModel } from '#models/appointmentModel.js'
+import { scheduleModel } from '#models/scheduleModel.js'
+import { serviceModel } from '#models/serviceModel.js'
+import { checkIfTimeIsWithinRange, isValidTimeFormat, calcularHoraFin } from '#utils/timeUtils.js'
 
 export async function runValidations (data) {
   // Acumula errores para devolver todas las validaciones fallidas juntas

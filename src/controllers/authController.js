@@ -1,5 +1,5 @@
-import { userModel } from '../models/userModel.js'
-import { JWT_SECRET } from '../../config.js'
+import { userModel } from '#models/userModel.js'
+import { JWT_SECRET } from '#root/config.js'
 import bcrypt from 'bcrypt'
 import jwt from 'jsonwebtoken'
 

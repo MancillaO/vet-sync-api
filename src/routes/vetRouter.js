@@ -1,5 +1,5 @@
 import { Router } from 'express'
-import { VetController } from '../controllers/vetController.js'
+import { VetController } from '#controllers/vetController.js'
 
 export const vetRouter = Router()
 

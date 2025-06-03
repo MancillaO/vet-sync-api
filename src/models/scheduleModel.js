@@ -1,4 +1,4 @@
-import { supabase } from '../database/index.js'
+import { supabase } from '#databases/index.js'
 
 export class scheduleModel {
   static async addSchedule ({ input }) {

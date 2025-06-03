@@ -1,5 +1,5 @@
-import { validateVet, validatePartialVet } from '../schemas/vetSchema.js'
-import { vetModel } from '../models/vetModel.js'
+import { validateVet, validatePartialVet } from '#schemas/vetSchema.js'
+import { vetModel } from '#models/vetModel.js'
 
 export class VetController {
   static async addVet (req, res) {

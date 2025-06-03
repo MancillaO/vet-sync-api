@@ -1,4 +1,4 @@
-import { speciesModel } from '../models/speciesModel.js'
+import { speciesModel } from '#models/speciesModel.js'
 
 export class SpeciesController {
   static async getAllSpecies (req, res) {

@@ -1,4 +1,4 @@
-import { breedsModel } from '../models/breedsModel.js'
+import { breedsModel } from '#models/breedsModel.js'
 
 export class BreedsController {
   static async getAllBreeds (req, res) {

@@ -1,5 +1,5 @@
-import { validateUser, validatePartialUser } from '../schemas/userSchema.js'
-import { userModel } from '../models/userModel.js'
+import { validateUser, validatePartialUser } from '#schemas/userSchema.js'
+import { userModel } from '#models/userModel.js'
 
 export class UserController {
   static async createUser (req, res) {

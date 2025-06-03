@@ -1,9 +1,9 @@
 import express from 'express'
 import morgan from 'morgan'
-import { corsMiddleware } from './src/middlewares/cors.js'
-import { router } from './src/routes/index.js'
-import { port, logger } from './config.js'
-import { initDatabaseConnection } from './src/database/index.js'
+import { corsMiddleware } from '#middlewares/cors.js'
+import { router } from '#routes/index.js'
+import { port, logger } from '#root/config.js'
+import { initDatabaseConnection } from '#databases/index.js'
 
 const app = express()
 
