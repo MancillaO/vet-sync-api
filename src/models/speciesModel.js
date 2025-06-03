@@ -1,4 +1,4 @@
-import { supabase } from './connection.js'
+import { supabase } from '../database/index.js'
 
 export class speciesModel {
   static async getAllSpecies () {
