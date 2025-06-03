@@ -10,8 +10,20 @@
     "lint": "eslint .",
     "lint:fix": "eslint . --fix"
   },
+  "imports": {
+    "#root/*": "./*",
+    "#src/*": "./src/*",
+    "#controllers/*": "./src/controllers/*",
+    "#databases/*": "./src/database/*",
+    "#middlewares/*": "./src/middlewares/*",
+    "#models/*": "./src/models/*",
+    "#routes/*": "./src/routes/*",
+    "#schemas/*": "./src/schemas/*",
+    "#services/*": "./src/services/*",  
+    "#utils/*": "./src/utils/*"
+  },
   "keywords": [],
-  "author": "",
+  "author": "omancilla",
   "license": "ISC",
   "description": "",
   "dependencies": {

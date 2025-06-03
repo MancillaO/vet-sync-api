@@ -1,4 +1,4 @@
-import { supabase } from '../database/index.js'
+import { supabase } from '#databases/index.js'
 
 export class petModel {
   static async addPet ({ input }) {

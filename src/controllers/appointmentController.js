@@ -1,6 +1,6 @@
-import { validateAppointment, validatePartialAppointment } from '../schemas/appointmentSchema.js'
-import { AppointmentModel } from '../models/appointmentModel.js'
-import { runValidations } from '../services/appointmentValidationService.js'
+import { validateAppointment, validatePartialAppointment } from '#schemas/appointmentSchema.js'
+import { AppointmentModel } from '#models/appointmentModel.js'
+import { runValidations } from '#services/appointmentValidationService.js'
 
 export class AppointmentController {
   static async getAllAppointments (req, res) {
