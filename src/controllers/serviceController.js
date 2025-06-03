@@ -1,6 +1,6 @@
-import { validateService, validatePartialService } from '../schemas/serviceSchema.js'
-import { serviceModel } from '../models/serviceModel.js'
-import { categoryModel } from '../models/categoryModel.js'
+import { validateService, validatePartialService } from '#schemas/serviceSchema.js'
+import { serviceModel } from '#models/serviceModel.js'
+import { categoryModel } from '#models/categoryModel.js'
 
 export class ServiceController {
   static async getAllServices (req, res) {

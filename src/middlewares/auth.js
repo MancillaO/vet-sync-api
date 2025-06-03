@@ -1,4 +1,4 @@
-import { JWT_SECRET } from '../../config.js'
+import { JWT_SECRET } from '#root/config.js'
 import jwt from 'jsonwebtoken'
 
 export const authenticateToken = (req, res, next) => {

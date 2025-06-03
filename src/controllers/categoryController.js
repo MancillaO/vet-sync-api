@@ -1,4 +1,4 @@
-import { categoryModel } from '../models/categoryModel.js'
+import { categoryModel } from '#models/categoryModel.js'
 
 export class CategoryController {
   static async getAllCategories (req, res) {

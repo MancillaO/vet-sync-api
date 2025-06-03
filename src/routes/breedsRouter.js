@@ -1,5 +1,5 @@
 import { Router } from 'express'
-import { BreedsController } from '../controllers/breedsController.js'
+import { BreedsController } from '#controllers/breedsController.js'
 
 export const breedsRouter = Router()
 

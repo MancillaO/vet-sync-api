@@ -1,6 +1,6 @@
-import { validateSchedule, validatePartialSchedule } from '../schemas/scheduleSchema.js'
-import { scheduleModel } from '../models/scheduleModel.js'
-import { vetModel } from '../models/vetModel.js'
+import { validateSchedule, validatePartialSchedule } from '#schemas/scheduleSchema.js'
+import { scheduleModel } from '#models/scheduleModel.js'
+import { vetModel } from '#models/vetModel.js'
 
 export class ScheduleController {
   static async addSchedule (req, res) {
