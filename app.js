@@ -3,6 +3,7 @@ import morgan from 'morgan'
 import { corsMiddleware } from './src/middlewares/cors.js'
 import { router } from './src/routes/index.js'
 import { port, logger } from './config.js'
+import { initDatabaseConnection } from './src/database/index.js'
 
 const app = express()
 
@@ -13,6 +14,7 @@ app.use(corsMiddleware())
 
 app.use(router)
 
-app.listen(port, () => {
+app.listen(port, async () => {
+  await initDatabaseConnection()
   console.log(`\nServer running on port ${port}\n`)
 })

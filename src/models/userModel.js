@@ -1,4 +1,4 @@
-import { supabase } from './connection.js'
+import { supabase } from '../database/index.js'
 import bcrypt from 'bcrypt'
 
 export class userModel {
