@@ -102,16 +102,6 @@ export class AppointmentModel {
     }
   }
 
-  /**
-   * Encuentra citas que se solapan con la cita propuesta
-   * @param {Object} params - Parámetros para buscar citas superpuestas
-   * @param {string} params.fecha - Fecha de la cita (YYYY-MM-DD)
-   * @param {string} params.hora_inicio - Hora de inicio de la cita (HH:MM)
-   * @param {string} params.hora_fin - Hora de fin de la cita (HH:MM)
-   * @param {number} [params.profesional_id] - ID del profesional (opcional)
-   * @param {number} [params.cliente_id] - ID del cliente (opcional)
-   * @returns {Array} - Lista de citas superpuestas
-   */
   static async findOverlappingAppointments ({ fecha, hora_inicio, hora_fin, profesional_id, cliente_id }) {
     try {
       // Consulta base: citas para la misma fecha que no estén canceladas
