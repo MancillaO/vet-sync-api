@@ -1,8 +1,8 @@
-import { breedsModel } from '#models/breedsModel.js'
+import { breedModel } from '#models/breedModel.js'
 
 export class BreedsController {
   static async getAllBreeds (req, res) {
-    const breeds = await breedsModel.getAllBreeds()
+    const breeds = await breedModel.getAllBreeds()
 
     if (breeds.length === 0) {
       return res.status(404).json({ error: 'Breeds not found' })
@@ -12,7 +12,7 @@ export class BreedsController {
 
   static async getById (req, res) {
     const { id } = req.params
-    const breed = await breedsModel.getById({ id })
+    const breed = await breedModel.getById({ id })
 
     if (breed.length === 0) {
       return res.status(404).json({ error: 'Breed not found' })
@@ -22,7 +22,7 @@ export class BreedsController {
 
   static async getByName (req, res) {
     const { name } = req.params
-    const breed = await breedsModel.getByName({ name })
+    const breed = await breedModel.getByName({ name })
 
     if (breed.length === 0) {
       return res.status(404).json({ error: 'Breed not found' })
@@ -32,7 +32,7 @@ export class BreedsController {
 
   static async getBySpecies (req, res) {
     const { speciesId } = req.params
-    const breeds = await breedsModel.getBySpecies({ speciesId })
+    const breeds = await breedModel.getBySpecies({ speciesId })
 
     if (breeds.length === 0) {
       return res.status(404).json({ error: 'Breeds not found' })

@@ -8,5 +8,4 @@ export const {
   JWT_SECRET,
   SUPABASE_URL: supabaseUrl,
   SUPABASE_ANON_KEY: supabaseKey
-
 } = process.env

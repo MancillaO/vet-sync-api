@@ -1,6 +1,6 @@
 import { supabase } from '#databases/index.js'
 
-export class breedsModel {
+export class breedModel {
   static async getAllBreeds () {
     const { data: breeds, error } = await supabase.from('razas').select()
 
