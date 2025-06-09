@@ -3,14 +3,14 @@ import { userModel } from '#models/userModel.js'
 
 export class UserController {
   static async createUser (req, res) {
-    const result = validateUser(req.body)
+    const { data, error } = validateUser(req.body)
 
-    if (result.error) {
-      return res.status(422).json({ error: JSON.parse(result.error.message) })
+    if (error) {
+      return res.status(422).json({ error: JSON.parse(error.message) })
     }
 
     try {
-      const user = await userModel.createUser({ input: result.data })
+      const user = await userModel.createUser({ input: data })
       return res.status(201).json({ message: 'User created', data: user })
     } catch (error) {
       return res.status(500).json({ error: error.message })
@@ -41,14 +41,14 @@ export class UserController {
 
   static async updateUser (req, res) {
     const { id } = req.params
-    const result = validatePartialUser(req.body)
+    const { data, error } = validatePartialUser(req.body)
 
-    if (result.error) {
-      return res.status(422).json({ error: JSON.parse(result.error.message) })
+    if (error) {
+      return res.status(422).json({ error: JSON.parse(error.message) })
     }
 
     try {
-      const updatedUser = await userModel.updateUser({ id, input: result.data })
+      const updatedUser = await userModel.updateUser({ id, input: data })
 
       if (updatedUser.length === 0) {
         return res.status(404).json({ error: 'User not found' })
