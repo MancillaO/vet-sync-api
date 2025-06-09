@@ -3,7 +3,6 @@ import { breedModel } from '#models/breedModel.js'
 import { speciesModel } from '#models/speciesModel.js'
 
 export const runValidations = async ({ data }) => {
-  // Only include validations for fields that are present in the data
   const validations = []
 
   if (data.cliente_id !== undefined) {
@@ -16,7 +15,6 @@ export const runValidations = async ({ data }) => {
     validations.push({ validate: validateSpecies, value: data.especie_id })
   }
 
-  // If there are no validations to run, return early
   if (validations.length === 0) return { error: null }
 
   const results = await Promise.all(
