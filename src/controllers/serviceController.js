@@ -1,6 +1,6 @@
 import { validateService, validatePartialService } from '#schemas/serviceSchema.js'
 import { serviceModel } from '#models/serviceModel.js'
-import { categoryModel } from '#models/categoryModel.js'
+import { runValidations } from '#root/src/services/serviceValidation.js'
 
 export class ServiceController {
   static async getAllServices (req, res) {
@@ -50,18 +50,18 @@ export class ServiceController {
   }
 
   static async addService (req, res) {
-    const result = validateService(req.body)
+    const { data, error } = validateService(req.body)
 
-    if (result.error) {
-      return res.status(422).json({ error: JSON.parse(result.error.message) })
+    if (error) {
+      return res.status(422).json({ error: JSON.parse(error.message) })
     }
 
-    const category = await categoryModel.getById({ id: result.data.categoria_id })
+    const { error: validationError } = await runValidations({ data })
 
-    if (category.length === 0) return res.status(404).json({ error: 'Category not found' })
+    if (validationError) return res.status(404).json({ error: validationError })
 
     try {
-      const service = await serviceModel.addService({ input: result.data })
+      const service = await serviceModel.addService({ input: data })
       return res.status(201).json({ message: 'Service created', data: service })
     } catch (error) {
       return res.status(500).json({ error: error.message })
@@ -70,19 +70,19 @@ export class ServiceController {
 
   static async updateService (req, res) {
     const { id } = req.params
-    const result = validatePartialService(req.body)
+    const { data, error } = validatePartialService(req.body)
 
-    if (result.error) {
-      return res.status(422).json({ error: JSON.parse(result.error.message) })
+    if (error) {
+      return res.status(422).json({ error: JSON.parse(error.message) })
     }
 
-    if (result.data.categoria_id) {
-      const category = await categoryModel.getById({ id: result.data.categoria_id })
-      if (category.length === 0) return res.status(404).json({ error: 'Category not found' })
+    if (data.categoria_id) {
+      const { error } = await runValidations({ data })
+      if (error) return res.status(404).json({ error })
     }
 
     try {
-      const service = await serviceModel.updateService({ id, input: result.data })
+      const service = await serviceModel.updateService({ id, input: data })
       return res.status(200).json({ message: 'Service updated', data: service })
     } catch (error) {
       return res.status(500).json({ error: error.message })
