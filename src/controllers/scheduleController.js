@@ -1,22 +1,23 @@
 import { validateSchedule, validatePartialSchedule } from '#schemas/scheduleSchema.js'
 import { scheduleModel } from '#models/scheduleModel.js'
-import { vetModel } from '#models/vetModel.js'
+import { runValidation } from '../services/scheduleValidation.js'
 
 export class ScheduleController {
   static async addSchedule (req, res) {
-    const result = validateSchedule(req.body)
+    const { data, error } = validateSchedule(req.body)
 
-    if (result.error) {
-      return res.status(422).json({ error: JSON.parse(result.error.message) })
+    if (error) {
+      return res.status(422).json({ error: JSON.parse(error.message) })
     }
 
-    const vet = await vetModel.getById({ id: result.data.profesional_id })
+    const { error: validationError } = await runValidation({ data })
 
-    if (vet.length === 0) return res.status(404).json({ error: 'Profesional not found' })
-    if (vet[0].activo === false) return res.status(400).json({ error: 'Profesional is not active' })
+    if (validationError) {
+      return res.status(422).json({ error: validationError })
+    }
 
     try {
-      const schedule = await scheduleModel.addSchedule({ input: result.data })
+      const schedule = await scheduleModel.addSchedule({ input: data })
       return res.status(201).json({ message: 'Schedule created', data: schedule })
     } catch (error) {
       return res.status(500).json({ error: error.message })
@@ -55,14 +56,20 @@ export class ScheduleController {
 
   static async updateSchedule (req, res) {
     const { id } = req.params
-    const result = validatePartialSchedule(req.body)
+    const { data, error } = validatePartialSchedule(req.body)
 
-    if (result.error) {
-      return res.status(422).json({ error: JSON.parse(result.error.message) })
+    if (error) {
+      return res.status(422).json({ error: JSON.parse(error.message) })
+    }
+
+    const { error: validationError } = await runValidation({ data })
+
+    if (validationError) {
+      return res.status(422).json({ error: validationError })
     }
 
     try {
-      const schedule = await scheduleModel.updateSchedule({ id, input: result.data })
+      const schedule = await scheduleModel.updateSchedule({ id, input: data })
 
       if (schedule.length === 0) {
         return res.status(404).json({ error: 'Schedule not found' })
