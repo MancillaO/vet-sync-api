@@ -44,7 +44,7 @@ Sigue estos pasos para configurar y ejecutar el proyecto en tu entorno local.
 
 Asegúrate de tener instalado Node.js en tu sistema.
 
-*   **Node.js** (v18 o superior)
+*   **Node.js** (v22 o superior)
 
 ### Instalación
 
