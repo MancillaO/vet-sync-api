@@ -3,3 +3,4 @@
 pnpm-lock.yaml
 .env
 secrets.json
+package-lock.json
