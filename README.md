@@ -50,7 +50,7 @@ Asegúrate de tener instalado Node.js en tu sistema.
 
 1.  **Clona el repositorio:**
     ```sh
-    git clone https://github.com/MancillaO/vet-plan-api.git
+    git clone https://github.com/omancillav/vet-plan-api.git
     ```
 
 2.  **Navega al directorio del proyecto:**
@@ -115,4 +115,4 @@ Este proyecto está bajo la Licencia ISC. Consulta el archivo `LICENSE` para má
 
 ## ✍️ Autor
 
-*   **Omar Mancilla** - [omancilla](https://github.com/MancillaO)
+*   **Omar Mancilla** - [omancilla](https://github.com/omancillav)
