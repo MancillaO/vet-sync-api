@@ -59,7 +59,8 @@ export class AuthController {
       const userData = {
         id: user[0].id,
         email: user[0].email,
-        nombre: user[0].nombre
+        nombre: user[0].nombre,
+        apellido: user[0].apellido
       }
 
       res.json({
