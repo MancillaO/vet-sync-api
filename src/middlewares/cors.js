@@ -3,7 +3,9 @@ import cors from 'cors'
 export const corsMiddleware = () => cors({
   origin: (origin, callback) => {
     const ACCEPTED_ORIGINS = [
-      'http://127.0.0.1:5500'
+      'http://127.0.0.1:5173',
+      'http://localhost:5173',
+      'https://vetsync.vercel.app'
     ]
 
     if (ACCEPTED_ORIGINS.includes(origin)) {
