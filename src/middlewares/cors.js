@@ -5,7 +5,8 @@ export const corsMiddleware = () => cors({
     const ACCEPTED_ORIGINS = [
       'http://127.0.0.1:5173',
       'http://localhost:5173',
-      'https://vetsync.vercel.app'
+      'https://vetsync.vercel.app',
+      'https://vetsync-git-develop-mancillaos-projects.vercel.app'
     ]
 
     if (ACCEPTED_ORIGINS.includes(origin)) {
