@@ -1,9 +1,68 @@
 import { userModel } from '#models/userModel.js'
+import { validateUser } from '#schemas/userSchema.js'
 import bcrypt from 'bcrypt'
 import jwt from 'jsonwebtoken'
 import crypto from 'crypto'
 
 export class AuthController {
+  static async register (req, res) {
+    const { data, error } = validateUser(req.body)
+
+    if (error) {
+      return res.status(422).json({ error: JSON.parse(error.message) })
+    }
+
+    const { email } = data
+
+    try {
+      const existingUser = await userModel.getAllUsers({ email })
+      if (existingUser.length > 0) {
+        return res.status(409).json({ message: 'Email already registered' })
+      }
+
+      const newUserArr = await userModel.createUser({ input: data })
+      const newUser = newUserArr[0]
+
+      const payload = {
+        id: newUser.id,
+        email: newUser.email,
+        nombre: newUser.nombre,
+        apellido: newUser.apellido
+      }
+
+      const accessToken = jwt.sign(
+        payload,
+        newUser.jwt_secret,
+        { expiresIn: '15m' }
+      )
+
+      const refreshToken = jwt.sign(
+        { id: newUser.id },
+        newUser.jwt_secret,
+        { expiresIn: '7d' }
+      )
+
+      await userModel.updateRefreshToken({ id: newUser.id, refresh_token: refreshToken })
+
+      const userData = {
+        id: newUser.id,
+        email: newUser.email,
+        nombre: newUser.nombre,
+        apellido: newUser.apellido
+      }
+
+      res.status(201).json({
+        accessToken,
+        refreshToken,
+        userData,
+        expiresIn: '15m'
+      })
+    } catch (e) {
+      console.error(e)
+      return res.status(500).json({ message: 'Internal server error' })
+    }
+  }
+
   static async login (req, res) {
     const { email, password } = req.body
 
