@@ -6,6 +6,8 @@ export const authRouter = Router()
 
 authRouter.post('/register', AuthController.register)
 authRouter.post('/login', AuthController.login)
+
 authRouter.post('/refresh', AuthController.refreshToken)
+authRouter.post('/token', AuthController.customToken)
+
 authRouter.post('/logout', authenticateToken, AuthController.logout)
-authRouter.post('/custom-token', AuthController.customToken)
