@@ -33,7 +33,11 @@ export class serviceModel {
 
   static async getActiveServices ({ active }) {
     try {
-      const { data: services, error } = await supabase.from('servicios').select().eq('activo', active)
+      const { data: services, error } = await supabase
+        .from('servicios')
+        .select()
+        .eq('activo', active)
+        .order('id', { ascending: true })
 
       if (error) throw error
 
