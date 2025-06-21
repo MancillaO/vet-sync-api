@@ -15,6 +15,7 @@ export const router = Router()
 
 router.use('/users', userRouter)
 router.use('/auth', authRouter)
+router.use('/services', servicesRouter)
 
 router.use(authenticateToken)
 
@@ -24,5 +25,4 @@ router.use('/pets', petRouter)
 router.use('/vets', vetRouter)
 router.use('/schedules', scheduleRouter)
 router.use('/categories', categoriesRouter)
-router.use('/services', servicesRouter)
 router.use('/appointments', appointmentsRouter)
