@@ -13,6 +13,10 @@ import { appointmentsRouter } from '#routes/appointmentsRouter.js'
 
 export const router = Router()
 
+router.get('/', (req, res) => {
+  res.json({ message: 'Welcome to the API' })
+})
+
 router.use('/users', userRouter)
 router.use('/auth', authRouter)
 router.use('/services', servicesRouter)
