@@ -38,7 +38,7 @@ const ServiceSchema = z.object({
     .int('La duración estimada debe ser un número entero')
     .positive('La duración estimada debe ser un número positivo'),
 
-  imagen_url: z.string()
+  img_url: z.string()
     .url('La URL de la imagen debe ser válida')
     .nullable()
     .optional()

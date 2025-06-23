@@ -67,7 +67,7 @@ export class serviceModel {
     if (input.precio) updateData.precio = input.precio
     if (input.duracion_estimada) updateData.duracion_estimada = input.duracion_estimada
     if (input.categoria_id) updateData.categoria_id = input.categoria_id
-    if (input.imagen_url !== undefined) updateData.imagen_url = input.imagen_url // Permite null para eliminar imagen
+    if (input.img_url !== undefined) updateData.img_url = input.img_url // Permite null para eliminar imagen
 
     if (Object.keys(updateData).length === 0) {
       return await this.getById({ id })
@@ -106,8 +106,8 @@ export class serviceModel {
       }
 
       // Si el servicio ya tiene una imagen, eliminarla primero
-      if (service[0].imagen_url) {
-        const oldFileName = service[0].imagen_url.split('/').pop()
+      if (service[0].img_url) {
+        const oldFileName = service[0].img_url.split('/').pop()
         await this.deleteImageFromStorage({ fileName: oldFileName })
       }
 
@@ -129,7 +129,7 @@ export class serviceModel {
       // Actualizar el servicio con la nueva URL
       const updatedService = await this.updateService({
         id: serviceId,
-        input: { imagen_url: publicUrl }
+        input: { img_url: publicUrl }
       })
 
       return {
@@ -149,20 +149,20 @@ export class serviceModel {
         throw new Error('Service not found')
       }
 
-      if (!service[0].imagen_url) {
+      if (!service[0].img_url) {
         throw new Error('Service has no image to remove')
       }
 
       // Extraer nombre del archivo de la URL
-      const fileName = service[0].imagen_url.split('/').pop()
+      const fileName = service[0].img_url.split('/').pop()
 
       // Eliminar de Storage
       await this.deleteImageFromStorage({ fileName })
 
-      // Actualizar servicio (poner imagen_url en null)
+      // Actualizar servicio (poner img_url en null)
       const updatedService = await this.updateService({
         id: serviceId,
-        input: { imagen_url: null }
+        input: { img_url: null }
       })
 
       return updatedService
