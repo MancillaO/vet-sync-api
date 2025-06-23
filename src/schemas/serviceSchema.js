@@ -36,7 +36,12 @@ const ServiceSchema = z.object({
     invalid_type_error: 'La duración estimada debe ser un número'
   })
     .int('La duración estimada debe ser un número entero')
-    .positive('La duración estimada debe ser un número positivo')
+    .positive('La duración estimada debe ser un número positivo'),
+
+  imagen_url: z.string()
+    .url('La URL de la imagen debe ser válida')
+    .nullable()
+    .optional()
 })
 
 export function validateService (object) {
