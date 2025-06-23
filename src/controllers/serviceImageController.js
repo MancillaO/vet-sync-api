@@ -70,8 +70,8 @@ export class ServiceImageController {
       }
 
       const imageInfo = {
-        hasImage: !!service[0].imagen_url,
-        imageUrl: service[0].imagen_url || null,
+        hasImage: !!service[0].img_url,
+        imageUrl: service[0].img_url || null,
         serviceName: service[0].nombre
       }
 
