@@ -166,7 +166,8 @@ export class AuthController {
         const payload = {
           id: userData.id,
           email: userData.email,
-          nombre: userData.nombre
+          nombre: userData.nombre,
+          apellido: userData.apellido
         }
 
         // Generar nuevo access token
