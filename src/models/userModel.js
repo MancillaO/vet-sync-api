@@ -50,14 +50,19 @@ export class userModel {
   }
 
   static async getUserByRefreshToken ({ refresh_token }) {
-    const { data: user, error } = await supabase
-      .from('usuarios')
-      .select()
-      .eq('refresh_token', refresh_token)
+    try {
+      const { data: user, error } = await supabase
+        .from('usuarios')
+        .select()
+        .eq('refresh_token', refresh_token)
 
-    if (error) throw new Error(error.message)
+      if (error) throw new Error(error.message)
 
-    return user
+      return user
+    } catch (error) {
+      console.log(`Error al obtener usuario por refresh token: ${error.message}`)
+      throw new Error(error.message)
+    }
   }
 
   static async updateRefreshToken ({ id, refresh_token }) {
