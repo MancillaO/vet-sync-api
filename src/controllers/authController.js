@@ -139,27 +139,39 @@ export class AuthController {
   }
 
   static async refreshToken (req, res) {
-    const { refreshToken } = req.body
+    // Handle OPTIONS preflight request
+    if (req.method === 'OPTIONS') {
+      return res.status(200).end()
+    }
 
-    if (!refreshToken) {
-      return res.status(401).json({ message: 'Refresh token not provided' })
+    // For actual requests, check the method
+    if (req.method !== 'POST') {
+      return res.status(405).json({ message: 'Method not allowed' })
     }
 
     try {
-      // Buscar el refresh token en la base de datos
-      const tokenData = await userModel.getRefreshToken({ token: refreshToken })
+      const { refreshToken } = req.body
 
-      if (!tokenData || !tokenData.usuarios) {
-        return res.status(403).json({ message: 'Invalid refresh token' })
+      if (!refreshToken) {
+        return res.status(400).json({ message: 'Refresh token is required' })
       }
 
-      const userData = tokenData.usuarios
+      try {
+        // Get refresh token with user data
+        const tokenData = await userModel.getRefreshToken({ token: refreshToken })
 
-      // Verificar el refresh token con el JWT secret del usuario
-      jwt.verify(refreshToken, userData.jwt_secret, async (err, decoded) => {
-        if (err) {
-          console.error('Refresh token verification error:', err.message)
-          // Eliminar el token inválido
+        if (!tokenData || !tokenData.usuarios) {
+          console.log('Refresh token not found in database')
+          return res.status(403).json({ message: 'Invalid or expired refresh token' })
+        }
+
+        const userData = tokenData.usuarios
+
+        // Verify the refresh token is still valid
+        try {
+          jwt.verify(refreshToken, userData.jwt_secret)
+        } catch (jwtError) {
+          // If token is invalid, clean it up
           await userModel.deleteRefreshToken({ token: refreshToken })
           return res.status(403).json({ message: 'Invalid or expired refresh token' })
         }
@@ -192,28 +204,49 @@ export class AuthController {
           { expiresIn: '7d' }
         )
 
+        // Usar transacción para evitar condiciones de carrera
         try {
-          // Eliminar el refresh token antiguo
+          // Primero eliminar el token antiguo
           await userModel.deleteRefreshToken({ token: refreshToken })
 
-          // Guardar el nuevo refresh token
+          // Luego crear el nuevo token
           await userModel.createRefreshToken({
             userId: userData.id,
             token: newRefreshToken
           })
 
-          res.json({
+          return res.json({
             accessToken: newAccessToken,
             refreshToken: newRefreshToken,
             expiresIn: '15m'
           })
         } catch (dbError) {
-          console.error('Error updating refresh token:', dbError)
+          console.error('Error en la transacción de tokens:', dbError)
+          // Si hay un error, intentar limpiar tokens duplicados
+          if (dbError.message.includes('duplicate key')) {
+            // Eliminar tokens duplicados y devolver el más reciente
+            await userModel.deleteAllUserRefreshTokens({ userId: userData.id })
+            await userModel.createRefreshToken({
+              userId: userData.id,
+              token: newRefreshToken
+            })
+
+            return res.json({
+              accessToken: newAccessToken,
+              refreshToken: newRefreshToken,
+              expiresIn: '15m'
+            })
+          }
           return res.status(500).json({ message: 'Error updating session' })
         }
-      })
+      } catch (jwtError) {
+        console.error('Error verifying refresh token:', jwtError.message)
+        // Eliminar el token inválido
+        await userModel.deleteRefreshToken({ token: refreshToken })
+        return res.status(403).json({ message: 'Invalid or expired refresh token' })
+      }
     } catch (error) {
-      console.error('Refresh token error:', error)
+      console.error('Error en el proceso de refresh token:', error)
       return res.status(500).json({ message: 'Internal server error' })
     }
   }
@@ -226,18 +259,11 @@ export class AuthController {
     }
 
     try {
-      // Verificar si el token existe
-      const tokenData = await userModel.getRefreshToken({ token: refreshToken })
-
-      if (tokenData) {
-        // Eliminar el refresh token
-        await userModel.deleteRefreshToken({ token: refreshToken })
-      }
-
-      res.status(200).json({ message: 'Logged out successfully' })
+      await userModel.deleteRefreshToken({ token: refreshToken })
+      return res.status(200).json({ message: 'Successfully logged out' })
     } catch (error) {
-      console.error('Logout error:', error)
-      res.status(500).json({ message: 'Error during logout' })
+      console.error('Error during logout:', error)
+      return res.status(500).json({ message: 'Error during logout' })
     }
   }
 

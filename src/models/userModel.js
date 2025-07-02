@@ -53,6 +53,19 @@ export class userModel {
     try {
       const tokenHash = crypto.createHash('sha256').update(token).digest('hex')
 
+      // Primero verificar si el token ya existe
+      const { data: existingToken } = await supabase
+        .from('refresh_tokens')
+        .select('id')
+        .eq('token_hash', tokenHash)
+        .single()
+
+      // Si ya existe, devolver el token existente
+      if (existingToken) {
+        return existingToken
+      }
+
+      // Si no existe, crear uno nuevo
       const { data, error } = await supabase
         .from('refresh_tokens')
         .insert([
@@ -64,12 +77,22 @@ export class userModel {
         .select()
 
       if (error) {
+        // Si es un error de duplicado, intentar obtener el token existente
+        if (error.code === '23505') { // Código de error de violación de restricción única
+          const { data: existing } = await supabase
+            .from('refresh_tokens')
+            .select()
+            .eq('token_hash', tokenHash)
+            .single()
+
+          if (existing) return existing
+        }
         throw new Error(error.message)
       }
 
       return data[0]
     } catch (error) {
-      console.error('Error creating refresh token:', error.message)
+      console.error('Error in createRefreshToken:', error.message)
       throw new Error('Error creating refresh token')
     }
   }
