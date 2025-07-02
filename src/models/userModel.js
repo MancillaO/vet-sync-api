@@ -49,35 +49,87 @@ export class userModel {
     return user
   }
 
-  static async getUserByRefreshToken ({ refresh_token }) {
+  static async createRefreshToken ({ userId, token }) {
     try {
-      const { data: user, error } = await supabase
-        .from('usuarios')
+      const tokenHash = crypto.createHash('sha256').update(token).digest('hex')
+
+      const { data, error } = await supabase
+        .from('refresh_tokens')
+        .insert([
+          {
+            user_id: userId,
+            token_hash: tokenHash
+          }
+        ])
         .select()
-        .eq('refresh_token', refresh_token)
 
-      if (error) throw new Error(error.message)
+      if (error) {
+        throw new Error(error.message)
+      }
 
-      return user
+      return data[0]
     } catch (error) {
-      console.log(`Error al obtener usuario por refresh token: ${error.message}`)
-      throw new Error(error.message)
+      console.error('Error creating refresh token:', error.message)
+      throw new Error('Error creating refresh token')
     }
   }
 
-  static async updateRefreshToken ({ id, refresh_token }) {
+  static async getRefreshToken ({ token }) {
     try {
-      const { data: user, error } = await supabase
-        .from('usuarios')
-        .update({ refresh_token })
-        .eq('id', id)
-        .select()
+      const tokenHash = crypto.createHash('sha256').update(token).digest('hex')
 
-      if (error) throw new Error(error.message)
+      const { data, error } = await supabase
+        .from('refresh_tokens')
+        .select('*, usuarios(*)')
+        .eq('token_hash', tokenHash)
+        .single()
 
-      return user
+      if (error) {
+        throw error
+      }
+
+      return data
     } catch (error) {
-      throw new Error(error.message)
+      console.error('Error getting refresh token:', error.message)
+      return null
+    }
+  }
+
+  static async deleteRefreshToken ({ token }) {
+    try {
+      const tokenHash = crypto.createHash('sha256').update(token).digest('hex')
+
+      const { error } = await supabase
+        .from('refresh_tokens')
+        .delete()
+        .eq('token_hash', tokenHash)
+
+      if (error) {
+        throw error
+      }
+
+      return true
+    } catch (error) {
+      console.error('Error deleting refresh token:', error.message)
+      return false
+    }
+  }
+
+  static async deleteAllUserRefreshTokens ({ userId }) {
+    try {
+      const { error } = await supabase
+        .from('refresh_tokens')
+        .delete()
+        .eq('user_id', userId)
+
+      if (error) {
+        throw error
+      }
+
+      return true
+    } catch (error) {
+      console.error('Error deleting user refresh tokens:', error.message)
+      return false
     }
   }
 
@@ -127,12 +179,16 @@ export class userModel {
 
   static async deleteUser ({ id }) {
     try {
-      const { error } = await supabase.from('usuarios').update({
-        activo: false,
-        refresh_token: null // Limpiar refresh token al desactivar usuario
-      }).eq('id', id)
+      // Primero desactivar el usuario
+      const { error } = await supabase
+        .from('usuarios')
+        .update({ activo: false })
+        .eq('id', id)
 
       if (error) throw new Error(error.message)
+
+      // Luego eliminar todos sus refresh tokens
+      await this.deleteAllUserRefreshTokens({ userId: id })
 
       const deletedUser = await this.getById({ id })
       return deletedUser
