@@ -42,7 +42,8 @@ export class AuthController {
         { expiresIn: '7d' }
       )
 
-      await userModel.updateRefreshToken({ id: newUser.id, refresh_token: refreshToken })
+      // Guardar el refresh token en la tabla dedicada
+      await userModel.createRefreshToken({ userId: newUser.id, token: refreshToken })
 
       const userData = {
         id: newUser.id,
@@ -112,8 +113,11 @@ export class AuthController {
         { expiresIn: '7d' }
       )
 
-      // Guardar refresh token en la base de datos
-      await userModel.updateRefreshToken({ id: user[0].id, refresh_token: refreshToken })
+      // Guardar refresh token en la tabla dedicada
+      await userModel.createRefreshToken({
+        userId: user[0].id,
+        token: refreshToken
+      })
 
       const userData = {
         id: user[0].id,
@@ -135,31 +139,47 @@ export class AuthController {
   }
 
   static async refreshToken (req, res) {
-    const { refreshToken } = req.body
+    // Handle OPTIONS preflight request
+    if (req.method === 'OPTIONS') {
+      return res.status(200).end()
+    }
 
-    if (!refreshToken) {
-      return res.status(401).json({ message: 'Refresh token not provided' })
+    // For actual requests, check the method
+    if (req.method !== 'POST') {
+      return res.status(405).json({ message: 'Method not allowed' })
     }
 
     try {
-      // Buscar usuario por refresh token
-      const user = await userModel.getUserByRefreshToken({ refresh_token: refreshToken })
+      const { refreshToken } = req.body
 
-      if (user.length === 0) {
-        return res.status(403).json({ message: 'Invalid refresh token' })
+      if (!refreshToken) {
+        return res.status(400).json({ message: 'Refresh token is required' })
       }
 
-      const userData = user[0]
+      try {
+        // Get refresh token with user data
+        const tokenData = await userModel.getRefreshToken({ token: refreshToken })
 
-      // Verificar el refresh token con el JWT secret del usuario
-      jwt.verify(refreshToken, userData.jwt_secret, async (err, decoded) => {
-        if (err) {
-          console.error('Refresh token verification error:', err.message)
+        if (!tokenData || !tokenData.usuarios) {
+          console.log('Refresh token not found in database')
+          return res.status(403).json({ message: 'Invalid or expired refresh token' })
+        }
+
+        const userData = tokenData.usuarios
+
+        // Verify the refresh token is still valid
+        try {
+          jwt.verify(refreshToken, userData.jwt_secret)
+        } catch (jwtError) {
+          // If token is invalid, clean it up
+          await userModel.deleteRefreshToken({ token: refreshToken })
           return res.status(403).json({ message: 'Invalid or expired refresh token' })
         }
 
         // Verificar que el usuario sigue activo
         if (!userData.activo) {
+          // Eliminar todos los tokens del usuario inactivo
+          await userModel.deleteAllUserRefreshTokens({ userId: userData.id })
           return res.status(401).json({ message: 'User is not active' })
         }
 
@@ -177,25 +197,73 @@ export class AuthController {
           { expiresIn: '15m' }
         )
 
-        // Opcional: Generar nuevo refresh token (rotación de tokens)
+        // Generar nuevo refresh token (rotación de tokens)
         const newRefreshToken = jwt.sign(
           { id: userData.id },
           userData.jwt_secret,
           { expiresIn: '7d' }
         )
 
-        // Actualizar refresh token en la base de datos
-        await userModel.updateRefreshToken({ id: userData.id, refresh_token: newRefreshToken })
+        // Usar transacción para evitar condiciones de carrera
+        try {
+          // Primero eliminar el token antiguo
+          await userModel.deleteRefreshToken({ token: refreshToken })
 
-        res.json({
-          accessToken: newAccessToken,
-          refreshToken: newRefreshToken,
-          expiresIn: '15m'
-        })
-      })
+          // Luego crear el nuevo token
+          await userModel.createRefreshToken({
+            userId: userData.id,
+            token: newRefreshToken
+          })
+
+          return res.json({
+            accessToken: newAccessToken,
+            refreshToken: newRefreshToken,
+            expiresIn: '15m'
+          })
+        } catch (dbError) {
+          console.error('Error en la transacción de tokens:', dbError)
+          // Si hay un error, intentar limpiar tokens duplicados
+          if (dbError.message.includes('duplicate key')) {
+            // Eliminar tokens duplicados y devolver el más reciente
+            await userModel.deleteAllUserRefreshTokens({ userId: userData.id })
+            await userModel.createRefreshToken({
+              userId: userData.id,
+              token: newRefreshToken
+            })
+
+            return res.json({
+              accessToken: newAccessToken,
+              refreshToken: newRefreshToken,
+              expiresIn: '15m'
+            })
+          }
+          return res.status(500).json({ message: 'Error updating session' })
+        }
+      } catch (jwtError) {
+        console.error('Error verifying refresh token:', jwtError.message)
+        // Eliminar el token inválido
+        await userModel.deleteRefreshToken({ token: refreshToken })
+        return res.status(403).json({ message: 'Invalid or expired refresh token' })
+      }
     } catch (error) {
-      console.error(error)
+      console.error('Error en el proceso de refresh token:', error)
       return res.status(500).json({ message: 'Internal server error' })
+    }
+  }
+
+  static async logout (req, res) {
+    const { refreshToken } = req.body
+
+    if (!refreshToken) {
+      return res.status(400).json({ message: 'Refresh token is required' })
+    }
+
+    try {
+      await userModel.deleteRefreshToken({ token: refreshToken })
+      return res.status(200).json({ message: 'Successfully logged out' })
+    } catch (error) {
+      console.error('Error during logout:', error)
+      return res.status(500).json({ message: 'Error during logout' })
     }
   }
 
