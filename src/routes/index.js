@@ -1,6 +1,6 @@
 import { Router } from 'express'
 import { authenticateToken } from '#middlewares/auth.js'
-import { validateApiKey } from '#middlewares/apikey.js'
+import { validateApiKey } from '#middlewares/apiKey.js'
 import { userRouter } from '#routes/userRouter.js'
 import { authRouter } from '#routes/authRouter.js'
 import { petRouter } from '#routes/petRouter.js'
