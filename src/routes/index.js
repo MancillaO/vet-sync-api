@@ -1,5 +1,6 @@
 import { Router } from 'express'
 import { authenticateToken } from '#middlewares/auth.js'
+import { validateApiKey } from '#middlewares/apikey.js'
 import { userRouter } from '#routes/userRouter.js'
 import { authRouter } from '#routes/authRouter.js'
 import { petRouter } from '#routes/petRouter.js'
@@ -16,6 +17,8 @@ export const router = Router()
 router.get('/', (req, res) => {
   res.json({ message: 'Welcome to the API' })
 })
+
+router.use(validateApiKey)
 
 router.use('/users', userRouter)
 router.use('/auth', authRouter)
