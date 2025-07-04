@@ -267,21 +267,6 @@ export class AuthController {
     }
   }
 
-  static async logout (req, res) {
-    try {
-      // Get the authenticated user from the request
-      const userId = req.user.id
-
-      // Clear the refresh token for the user
-      await userModel.updateRefreshToken({ id: userId, refresh_token: null })
-
-      res.json({ message: 'Logout successful' })
-    } catch (error) {
-      console.error('Logout error:', error)
-      return res.status(500).json({ message: 'Internal server error' })
-    }
-  }
-
   static async customToken (req, res) {
     const { email, password, expiration } = req.body
 
