@@ -1,5 +1,6 @@
 import express from 'express'
 import morgan from 'morgan'
+import { validateApiKey } from '#middlewares/apikey.js'
 import { corsMiddleware } from '#middlewares/cors.js'
 import { router } from '#routes/index.js'
 import { port, logger } from '#root/config.js'
@@ -11,6 +12,7 @@ app.use(express.json())
 app.disable('x-powered-by')
 app.use(morgan(logger))
 app.use(corsMiddleware())
+app.use(validateApiKey)
 
 app.use(router)
 

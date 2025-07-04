@@ -6,5 +6,6 @@ export const {
   NODE_ENV,
   logger = NODE_ENV === 'production' ? 'combined' : 'dev',
   SUPABASE_URL: supabaseUrl,
-  SUPABASE_ANON_KEY: supabaseKey
+  SUPABASE_ANON_KEY: supabaseKey,
+  API_KEY: apiKey
 } = process.env
