@@ -67,6 +67,7 @@ export class petModel {
     if (input.raza_id) updateData.raza_id = input.raza_id
     if (input.edad) updateData.edad = input.edad
     if (input.sexo) updateData.sexo = input.sexo
+    if (input.img_url !== undefined) updateData.img_url = input.img_url // Permite null para eliminar imagen
 
     if (Object.keys(updateData).length === 0) {
       return await this.getById({ id })
@@ -93,6 +94,96 @@ export class petModel {
       return deletedPet
     } catch (error) {
       throw new Error(error.message)
+    }
+  }
+
+  static async uploadPetImage ({ petId, file, fileName }) {
+    try {
+      // Primero verificar que la mascota existe
+      const pet = await this.getById({ id: petId })
+      if (pet.length === 0) {
+        throw new Error('Pet not found')
+      }
+
+      // Si la mascota ya tiene una imagen, eliminarla primero
+      if (pet[0].img_url) {
+        const oldFileName = pet[0].img_url.split('/').pop()
+        await this.deleteImageFromStorage({ fileName: oldFileName })
+      }
+
+      // Subir nueva imagen a Supabase Storage
+      const { error } = await supabase.storage
+        .from('mascotas-imagenes')
+        .upload(fileName, file.buffer, {
+          contentType: file.mimetype,
+          upsert: false
+        })
+
+      if (error) throw error
+
+      // Obtener la URL pública
+      const { data: { publicUrl } } = supabase.storage
+        .from('mascotas-imagenes')
+        .getPublicUrl(fileName)
+
+      // Actualizar la mascota con la nueva URL
+      const updatedPet = await this.updatePet({
+        id: petId,
+        input: { img_url: publicUrl }
+      })
+
+      return {
+        pet: updatedPet,
+        imageUrl: publicUrl
+      }
+    } catch (error) {
+      throw error
+    }
+  }
+
+  static async removePetImage ({ petId }) {
+    try {
+      // Obtener la mascota actual
+      const pet = await this.getById({ id: petId })
+      if (pet.length === 0) {
+        throw new Error('Pet not found')
+      }
+
+      if (!pet[0].img_url) {
+        throw new Error('Pet has no image to remove')
+      }
+
+      // Extraer nombre del archivo de la URL
+      const fileName = pet[0].img_url.split('/').pop()
+
+      // Eliminar de Storage
+      await this.deleteImageFromStorage({ fileName })
+
+      // Actualizar mascota (poner img_url en null)
+      const updatedPet = await this.updatePet({
+        id: petId,
+        input: { img_url: null }
+      })
+
+      return updatedPet
+    } catch (error) {
+      throw error
+    }
+  }
+
+  static async deleteImageFromStorage ({ fileName }) {
+    try {
+      const { error } = await supabase.storage
+        .from('mascotas-imagenes')
+        .remove([fileName])
+
+      if (error) throw error
+
+      return true
+    } catch (error) {
+      // Log del error pero no fallar completamente
+      console.warn('Error deleting image from storage:', error.message)
+      return false
     }
   }
 }
