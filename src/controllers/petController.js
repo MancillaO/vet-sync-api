@@ -38,7 +38,7 @@ export class PetController {
     const pets = await petModel.getDetailedPet({ clienteId })
 
     if (pets.length === 0) {
-      return res.status(404).json({ error: 'Pets not found' })
+      return res.status(200).json({ message: 'Pets not found', data: [] })
     }
     res.json({ message: 'Pets found', data: pets })
   }
