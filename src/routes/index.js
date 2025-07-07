@@ -23,11 +23,11 @@ router.use(validateApiKey)
 router.use('/users', userRouter)
 router.use('/auth', authRouter)
 router.use('/services', servicesRouter)
+router.use('/species', speciesRouter)
+router.use('/breeds', breedsRouter)
 
 router.use(authenticateToken)
 
-router.use('/species', speciesRouter)
-router.use('/breeds', breedsRouter)
 router.use('/pets', petRouter)
 router.use('/vets', vetRouter)
 router.use('/schedules', scheduleRouter)
