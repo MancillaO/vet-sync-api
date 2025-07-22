@@ -45,6 +45,11 @@ Sigue estos pasos para configurar y ejecutar el proyecto en tu entorno local.
 Asegúrate de tener instalado Node.js en tu sistema.
 
 *   **Node.js** (v22 o superior)
+*   **pnpm** (opcional pero recomendado):
+    ```sh
+    # Instalar pnpm globalmente (si no lo tienes instalado)
+    npm install -g pnpm
+    ```
 
 ### Instalación
 
@@ -58,9 +63,13 @@ Asegúrate de tener instalado Node.js en tu sistema.
     cd vet-plan-api
     ```
 
-3.  **Instala las dependencias:**
+3.  **Instala las dependencias (recomendado usar pnpm):**
     ```sh
-    npm install
+    # Usando pnpm (recomendado)
+    pnpm install
+    
+    # O usando npm
+    # npm install
     ```
 
 4.  **Configura las variables de entorno:**
@@ -79,13 +88,21 @@ Asegúrate de tener instalado Node.js en tu sistema.
 Una vez completada la instalación, puedes iniciar el servidor en modo de desarrollo, que se reiniciará automáticamente con cada cambio.
 
 ```sh
-npm run dev
+# Usando pnpm (recomendado)
+pnpm dev
+
+# O usando npm
+# npm run dev
 ```
 
 Para iniciar el servidor en modo de producción:
 
 ```sh
-npm run start
+# Usando pnpm (recomendado)
+pnpm start
+
+# O usando npm
+# npm run start
 ```
 
 ---
