@@ -15,7 +15,11 @@ import { appointmentsRouter } from '#routes/appointmentsRouter.js'
 export const router = Router()
 
 router.get('/', (req, res) => {
-  res.json({ message: 'Welcome to the API' })
+  res.json({
+    message: 'Welcome to the vet-sync API',
+    github: 'https://github.com/omancillav/vet-sync-api.git',
+    author: 'omancillav'
+  })
 })
 
 router.use(validateApiKey)
