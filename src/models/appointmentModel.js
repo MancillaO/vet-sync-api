@@ -1,4 +1,6 @@
 import { supabase } from '#databases/index.js'
+import { calcularHoraFin } from '#utils/timeUtils.js'
+import { serviceModel } from './serviceModel.js'
 
 export class AppointmentModel {
   static async getAllAppointments () {
@@ -53,8 +55,27 @@ export class AppointmentModel {
   }
 
   static async addAppointment ({ input }) {
+    const { servicio_id, hora_inicio } = input
+
     try {
-      const { data: appointment, error } = await supabase.from('citas').insert([input]).select()
+      // 1. Obtener la duración del servicio para calcular la hora de fin
+      const service = await serviceModel.getById({ id: servicio_id })
+      if (!service || service.length === 0) {
+        throw new Error('Servicio no encontrado para calcular la duración de la cita.')
+      }
+      const duracionEstimada = service[0].duracion_estimada
+
+      // 2. Calcular la hora de finalización
+      const hora_fin = calcularHoraFin(hora_inicio, duracionEstimada)
+
+      // 3. Crear el objeto de la cita con la hora de fin
+      const appointmentData = {
+        ...input,
+        hora_fin
+      }
+
+      // 4. Insertar la cita en la base de datos
+      const { data: appointment, error } = await supabase.from('citas').insert(appointmentData).select()
 
       if (error) throw error
 
