@@ -1,5 +1,3 @@
--- Obtener detalles de mascotas
-
 CREATE OR REPLACE FUNCTION obtener_mascotas(
     p_cliente_id UUID DEFAULT NULL
 )
@@ -11,6 +9,7 @@ RETURNS TABLE (
     nombre_raza VARCHAR(100),
     edad INTEGER,
     sexo CHAR(1),
+    img_url TEXT,
     fecha_registro TIMESTAMPTZ,
     activo BOOLEAN
 ) 
@@ -26,6 +25,7 @@ BEGIN
         r.nombre::VARCHAR(100) as nombre_raza,
         m.edad,
         m.sexo,
+        m.img_url,
         m.fecha_registro,
         m.activo
     FROM mascotas m
