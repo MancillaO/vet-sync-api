@@ -1,11 +1,8 @@
 import { userModel } from '#models/userModel.js'
 import { validateUser } from '#schemas/userSchema.js'
-import { OAuth2Client } from 'google-auth-library'
 import bcrypt from 'bcrypt'
 import jwt from 'jsonwebtoken'
 import crypto from 'crypto'
-
-const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID)
 
 export class AuthController {
   static async register (req, res) {
@@ -138,122 +135,6 @@ export class AuthController {
     } catch (e) {
       console.error(e)
       return res.status(500).json({ message: 'Internal server error' })
-    }
-  }
-
-  static async googleAuth (req, res) {
-    const { googleToken } = req.body
-
-    try {
-      const ticket = await client.verifyIdToken({
-        idToken: googleToken,
-        audience: process.env.GOOGLE_CLIENT_ID
-      })
-
-      const payload = ticket.getPayload()
-      const {
-        sub: googleId,
-        email,
-        given_name: nombre,
-        family_name: apellido,
-        picture: avatarUrl
-      } = payload
-
-      // Buscar usuario existente por Google ID o email
-      let user = await userModel.getAllUsers({ googleId })
-      if (user.length === 0) {
-        user = await userModel.getAllUsers({ email })
-      }
-
-      let userData
-      if (user.length > 0) {
-      // Usuario existe - actualizar datos de Google si es necesario
-        userData = user[0]
-        if (!userData.google_id) {
-          await userModel.updateUser({
-            id: userData.id,
-            input: {
-              google_id: googleId,
-              avatar_url: avatarUrl,
-              auth_provider: 'google'
-            }
-          })
-        }
-      } else {
-      // Crear nuevo usuario
-        const newUserData = {
-          nombre,
-          apellido,
-          email,
-          google_id: googleId,
-          avatar_url: avatarUrl,
-          auth_provider: 'google',
-          telefono: '',
-          direccion: ''
-        // password será null para usuarios de Google
-        }
-
-        const newUserArr = await userModel.createUserFromGoogle({ input: newUserData })
-        userData = newUserArr[0]
-      }
-
-      if (!userData.activo) {
-        return res.status(401).json({ message: 'User is not active' })
-      }
-
-      // Generar JWT secret si no existe
-      let userJwtSecret = userData.jwt_secret
-      if (!userJwtSecret) {
-        userJwtSecret = crypto.randomBytes(64).toString('hex')
-        await userModel.updateUserSecret({
-          id: userData.id,
-          jwt_secret: userJwtSecret
-        })
-      }
-
-      // Generar tokens (mismo proceso que login normal)
-      const tokenPayload = {
-        id: userData.id,
-        email: userData.email,
-        nombre: userData.nombre,
-        apellido: userData.apellido
-      }
-
-      const accessToken = jwt.sign(
-        tokenPayload,
-        userJwtSecret,
-        { expiresIn: '15m' }
-      )
-
-      const refreshToken = jwt.sign(
-        { id: userData.id },
-        userJwtSecret,
-        { expiresIn: '7d' }
-      )
-
-      // Guardar refresh token
-      await userModel.createRefreshToken({
-        userId: userData.id,
-        token: refreshToken
-      })
-
-      const responseData = {
-        id: userData.id,
-        email: userData.email,
-        nombre: userData.nombre,
-        apellido: userData.apellido,
-        avatar_url: userData.avatar_url
-      }
-
-      res.json({
-        accessToken,
-        refreshToken,
-        userData: responseData,
-        expiresIn: '15m'
-      })
-    } catch (error) {
-      console.error('Google auth error:', error)
-      return res.status(401).json({ message: 'Invalid Google token' })
     }
   }
 
