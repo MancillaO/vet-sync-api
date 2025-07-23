@@ -28,39 +28,11 @@ export class userModel {
     }
   }
 
-  static async createUserFromGoogle ({ input }) {
-    const { nombre, apellido, email, google_id, avatar_url, auth_provider } = input
-    const jwtSecret = crypto.randomBytes(64).toString('hex')
-
-    try {
-      const { data: user, error } = await supabase.from('usuarios').insert({
-        nombre,
-        apellido,
-        email,
-        google_id,
-        avatar_url,
-        auth_provider,
-        telefono: '',
-        direccion: '',
-        jwt_secret: jwtSecret
-      }).select()
-
-      if (error) throw new Error(error.message)
-      return user
-    } catch (error) {
-      throw new Error(error.message)
-    }
-  }
-
-  static async getAllUsers ({ email, googleId }) {
+  static async getAllUsers ({ email }) {
     let query = supabase.from('usuarios').select()
 
     if (email) {
       query = query.eq('email', email)
-    }
-
-    if (googleId) {
-      query = query.eq('google_id', googleId)
     }
 
     const { data: users, error } = await query
