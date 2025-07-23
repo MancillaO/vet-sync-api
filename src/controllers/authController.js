@@ -33,7 +33,7 @@ export class AuthController {
       const accessToken = jwt.sign(
         payload,
         newUser.jwt_secret,
-        { expiresIn: '15m' }
+        { expiresIn: '1h' }
       )
 
       const refreshToken = jwt.sign(
@@ -45,18 +45,10 @@ export class AuthController {
       // Guardar el refresh token en la tabla dedicada
       await userModel.createRefreshToken({ userId: newUser.id, token: refreshToken })
 
-      const userData = {
-        id: newUser.id,
-        email: newUser.email,
-        nombre: newUser.nombre,
-        apellido: newUser.apellido
-      }
-
       res.status(201).json({
         accessToken,
         refreshToken,
-        userData,
-        expiresIn: '15m'
+        expiresIn: '1h'
       })
     } catch (e) {
       console.error(e)
@@ -103,7 +95,7 @@ export class AuthController {
       const accessToken = jwt.sign(
         payload,
         userJwtSecret,
-        { expiresIn: '15m' }
+        { expiresIn: '1h' }
       )
 
       // Generar refresh token (larga duración)
@@ -119,18 +111,10 @@ export class AuthController {
         token: refreshToken
       })
 
-      const userData = {
-        id: user[0].id,
-        email: user[0].email,
-        nombre: user[0].nombre,
-        apellido: user[0].apellido
-      }
-
       res.json({
         accessToken,
         refreshToken,
-        userData,
-        expiresIn: '15m'
+        expiresIn: '1h'
       })
     } catch (e) {
       console.error(e)
@@ -194,7 +178,7 @@ export class AuthController {
         const newAccessToken = jwt.sign(
           payload,
           userData.jwt_secret,
-          { expiresIn: '15m' }
+          { expiresIn: '1h' }
         )
 
         // Generar nuevo refresh token (rotación de tokens)
@@ -218,7 +202,7 @@ export class AuthController {
           return res.json({
             accessToken: newAccessToken,
             refreshToken: newRefreshToken,
-            expiresIn: '15m'
+            expiresIn: '1h'
           })
         } catch (dbError) {
           console.error('Error en la transacción de tokens:', dbError)
@@ -234,7 +218,7 @@ export class AuthController {
             return res.json({
               accessToken: newAccessToken,
               refreshToken: newRefreshToken,
-              expiresIn: '15m'
+              expiresIn: '1h'
             })
           }
           return res.status(500).json({ message: 'Error updating session' })
