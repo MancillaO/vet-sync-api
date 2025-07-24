@@ -97,7 +97,7 @@ export class petModel {
     }
   }
 
-  static async uploadPetImage ({ petId, file, fileName }) {
+  static async uploadPetImage ({ petId, userId, file, fileName }) {
     try {
       // Primero verificar que la mascota existe
       const pet = await this.getById({ id: petId })
@@ -107,14 +107,21 @@ export class petModel {
 
       // Si la mascota ya tiene una imagen, eliminarla primero
       if (pet[0].img_url) {
-        const oldFileName = pet[0].img_url.split('/').pop()
-        await this.deleteImageFromStorage({ fileName: oldFileName })
+        // Extraer el path completo después del dominio
+        const urlParts = pet[0].img_url.split('mascotas-imagenes/')
+        if (urlParts.length > 1) {
+          const oldPath = `user-${userId}/${urlParts[1].split('/').pop()}`
+          await this.deleteImageFromStorage({ filePath: oldPath })
+        }
       }
+
+      // Crear path con estructura de carpetas por usuario
+      const filePath = `user-${userId}/${fileName}`
 
       // Subir nueva imagen a Supabase Storage
       const { error } = await supabase.storage
         .from('mascotas-imagenes')
-        .upload(fileName, file.buffer, {
+        .upload(filePath, file.buffer, {
           contentType: file.mimetype,
           upsert: false
         })
@@ -124,7 +131,7 @@ export class petModel {
       // Obtener la URL pública
       const { data: { publicUrl } } = supabase.storage
         .from('mascotas-imagenes')
-        .getPublicUrl(fileName)
+        .getPublicUrl(filePath)
 
       // Actualizar la mascota con la nueva URL
       const updatedPet = await this.updatePet({
@@ -153,11 +160,12 @@ export class petModel {
         throw new Error('Pet has no image to remove')
       }
 
-      // Extraer nombre del archivo de la URL
-      const fileName = pet[0].img_url.split('/').pop()
-
-      // Eliminar de Storage
-      await this.deleteImageFromStorage({ fileName })
+      // Extraer el path completo después del dominio
+      const urlParts = pet[0].img_url.split('mascotas-imagenes/')
+      if (urlParts.length > 1) {
+        const filePath = `user-${pet[0].cliente_id}/${urlParts[1].split('/').pop()}`
+        await this.deleteImageFromStorage({ filePath })
+      }
 
       // Actualizar mascota (poner img_url en null)
       const updatedPet = await this.updatePet({
@@ -171,11 +179,11 @@ export class petModel {
     }
   }
 
-  static async deleteImageFromStorage ({ fileName }) {
+  static async deleteImageFromStorage ({ filePath }) {
     try {
       const { error } = await supabase.storage
         .from('mascotas-imagenes')
-        .remove([fileName])
+        .remove([filePath])
 
       if (error) throw error
 
