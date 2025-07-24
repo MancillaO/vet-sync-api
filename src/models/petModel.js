@@ -67,7 +67,7 @@ export class petModel {
     if (input.raza_id) updateData.raza_id = input.raza_id
     if (input.edad) updateData.edad = input.edad
     if (input.sexo) updateData.sexo = input.sexo
-    if (input.img_url !== undefined) updateData.img_url = input.img_url // Permite null para eliminar imagen
+    if (input.img_url !== undefined) updateData.img_url = input.img_url === 'null' ? null : input.img_url
 
     if (Object.keys(updateData).length === 0) {
       return await this.getById({ id })
