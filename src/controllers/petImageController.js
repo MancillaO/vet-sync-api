@@ -3,6 +3,7 @@ import { petModel } from '#models/petModel.js'
 export class PetImageController {
   static async uploadImage (req, res) {
     const { id } = req.params
+    const userId = req.user.id // El token JWT ya nos provee el ID del usuario
 
     try {
       // Verificar que se subió un archivo
@@ -16,6 +17,7 @@ export class PetImageController {
       // Subir imagen y actualizar mascota
       const result = await petModel.uploadPetImage({
         petId: id,
+        userId,
         file: req.file,
         fileName
       })
