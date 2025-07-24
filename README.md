@@ -113,13 +113,13 @@ La API expone los siguientes recursos. Las rutas marcadas con 🔒 requieren aut
 
 *   `/auth`: Rutas para autenticación (login, registro).
 *   `/users`: Gestión de usuarios.
+*   `/services`: Gestión de servicios ofrecidos.
 *   🔒 `/species`: Gestión de especies de mascotas.
 *   🔒 `/breeds`: Gestión de razas de mascotas.
 *   🔒 `/pets`: Gestión de mascotas (pacientes).
 *   🔒 `/vets`: Gestión de veterinarios.
 *   🔒 `/schedules`: Gestión de horarios de los veterinarios.
 *   🔒 `/categories`: Gestión de categorías de servicios.
-*   🔒 `/services`: Gestión de servicios ofrecidos.
 *   🔒 `/appointments`: Gestión de citas.
 
 ---
