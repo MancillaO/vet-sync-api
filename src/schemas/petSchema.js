@@ -37,7 +37,9 @@ const PetSchema = z.object({
     .optional()
     .refine(val => val !== undefined, {
       message: 'El sexo es obligatorio'
-    })
+    }),
+
+  img_url: z.string().optional()
 })
 
 export function validatePet (object) {
