@@ -60,14 +60,39 @@ export class petModel {
 
   static async updatePet ({ id, input }) {
     const updateData = {}
+    let currentPet = null
 
+    // Get current pet data to check for existing image
+    if (input.img_url !== undefined && (input.img_url === null || input.img_url === 'null')) {
+      currentPet = await this.getById({ id })
+      if (currentPet.length === 0) {
+        throw new Error('Pet not found')
+      }
+    }
+
+    // Prepare update data
     if (input.nombre) updateData.nombre = input.nombre
     if (input.cliente_id) updateData.cliente_id = input.cliente_id
     if (input.especie_id) updateData.especie_id = input.especie_id
     if (input.raza_id) updateData.raza_id = input.raza_id
     if (input.edad) updateData.edad = input.edad
     if (input.sexo) updateData.sexo = input.sexo
-    if (input.img_url !== undefined) updateData.img_url = input.img_url === 'null' ? null : input.img_url
+
+    // Handle image URL update and deletion
+    if (input.img_url !== undefined) {
+      // If we're setting img_url to null and there was a previous image
+      if ((input.img_url === null || input.img_url === 'null') && currentPet?.[0]?.img_url) {
+        const currentImageUrl = currentPet[0].img_url
+        // Extract the file path from the URL
+        const urlParts = currentImageUrl.split('mascotas-imagenes/')
+        if (urlParts.length > 1) {
+          const filePath = `user-${currentPet[0].cliente_id}/${urlParts[1].split('/').pop()}`
+          // Delete the image from storage
+          await this.deleteImageFromStorage({ filePath })
+        }
+      }
+      updateData.img_url = input.img_url === 'null' ? null : input.img_url
+    }
 
     if (Object.keys(updateData).length === 0) {
       return await this.getById({ id })
