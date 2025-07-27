@@ -8,7 +8,7 @@ export class AppointmentController {
       const appointments = await AppointmentModel.getAllAppointments()
 
       if (appointments.length === 0) {
-        return res.status(404).json({ error: 'Appointments not found' })
+        return res.status(200).json({ message: 'No appointments found', data: [] })
       }
 
       return res.json({ message: 'Appointments found', data: appointments })
@@ -38,7 +38,7 @@ export class AppointmentController {
       const appointments = await AppointmentModel.getDetailedAppointments()
 
       if (appointments.length === 0) {
-        return res.status(404).json({ error: 'Appointments not found' })
+        return res.status(200).json({ message: 'No appointments found', data: [] })
       }
 
       return res.json({ message: 'Appointments found', data: appointments })
