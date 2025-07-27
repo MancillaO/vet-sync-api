@@ -114,3 +114,18 @@ INSERT INTO razas (nombre, especie_id) VALUES
 ('Boa Arborícola Esmeralda', 7), ('Eslizón de Lengua Azul', 7), ('Eslizón de Fuego', 7), ('Tegu', 7),  
 ('Monitor Sabana', 7), ('Monitor del Nilo', 7), ('Tegu Argentino Blanco y Negro', 7),  
 ('Serpiente Taipán', 7), ('Lagarto de Collar', 7);
+
+--Profesionales
+-- INSERT para la tabla profesionales
+INSERT INTO profesionales (nombre, apellido, email, telefono, especialidad) VALUES
+('Danna', 'Ramirez', 'dannop@gmail.com','5574839248','Consultas Generales'),
+('Ana', 'García', 'ana.garcia@vetclinic.com', '5551234567', 'Medicina Veterinaria General'),
+('Carlos', 'Mendoza', 'carlos.mendoza@vetclinic.com', '5551234568', 'Medicina Veterinaria General'),
+('María', 'López', 'maria.lopez@vetclinic.com', '5551234569', 'Medicina Veterinaria General'),
+('Dr. Roberto', 'Hernández', 'roberto.hernandez@vetclinic.com', '5551234570', 'Cirugía Veterinaria'),
+('Dra. Patricia', 'Ruiz', 'patricia.ruiz@vetclinic.com', '5551234571', 'Dermatología Veterinaria'),
+('Dr. Miguel', 'Vargas', 'miguel.vargas@vetclinic.com', '5551234572', 'Cardiología Veterinaria'),
+('Laura', 'Jiménez', 'laura.jimenez@vetclinic.com', '5551234573', 'Estética Canina'),
+('Sofia', 'Torres', 'sofia.torres@vetclinic.com', '5551234574', 'Spa y Relajación Animal'),
+('Juan', 'Ramírez', 'juan.ramirez@vetclinic.com', '5551234575', 'Radiología Veterinaria'),
+('Carmen', 'Flores', 'carmen.flores@vetclinic.com', '5551234576', 'Laboratorio Clínico');
