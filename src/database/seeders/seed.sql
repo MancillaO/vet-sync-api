@@ -114,3 +114,77 @@ INSERT INTO razas (nombre, especie_id) VALUES
 ('Boa Arborícola Esmeralda', 7), ('Eslizón de Lengua Azul', 7), ('Eslizón de Fuego', 7), ('Tegu', 7),  
 ('Monitor Sabana', 7), ('Monitor del Nilo', 7), ('Tegu Argentino Blanco y Negro', 7),  
 ('Serpiente Taipán', 7), ('Lagarto de Collar', 7);
+
+--Profesionales
+-- INSERT para la tabla profesionales
+INSERT INTO profesionales (nombre, apellido, email, telefono, especialidad) VALUES
+('Danna', 'Ramirez', 'dannop@gmail.com','5574839248','Consultas Generales'),
+('Ana', 'García', 'ana.garcia@vetclinic.com', '5551234567', 'Medicina Veterinaria General'),
+('Carlos', 'Mendoza', 'carlos.mendoza@vetclinic.com', '5551234568', 'Medicina Veterinaria General'),
+('María', 'López', 'maria.lopez@vetclinic.com', '5551234569', 'Medicina Veterinaria General'),
+('Dr. Roberto', 'Hernández', 'roberto.hernandez@vetclinic.com', '5551234570', 'Cirugía Veterinaria'),
+('Dra. Patricia', 'Ruiz', 'patricia.ruiz@vetclinic.com', '5551234571', 'Dermatología Veterinaria'),
+('Dr. Miguel', 'Vargas', 'miguel.vargas@vetclinic.com', '5551234572', 'Cardiología Veterinaria'),
+('Laura', 'Jiménez', 'laura.jimenez@vetclinic.com', '5551234573', 'Estética Canina'),
+('Sofia', 'Torres', 'sofia.torres@vetclinic.com', '5551234574', 'Spa y Relajación Animal'),
+('Juan', 'Ramírez', 'juan.ramirez@vetclinic.com', '5551234575', 'Radiología Veterinaria'),
+('Carmen', 'Flores', 'carmen.flores@vetclinic.com', '5551234576', 'Laboratorio Clínico');
+
+-- Horarios
+INSERT INTO horarios_profesionales (profesional_id, dias_trabajo, hora_inicio, hora_fin) VALUES
+('2c2d2ce0-e5b8-4f3f-8e6e-a4b78cc0a643', 'LMJV', '08:00:00', '17:00:00'),
+('2c2d2ce0-e5b8-4f3f-8e6e-a4b78cc0a643', 'S', '09:00:00', '14:00:00'),
+('34992607-a7b9-4bdd-8997-9f14cf0092f7', 'LMWV', '08:00:00', '16:00:00'),
+('34992607-a7b9-4bdd-8997-9f14cf0092f7', 'S', '10:00:00', '15:00:00'),
+('3780ca96-2361-4497-a5ff-016940f145d6', 'LWV', '09:00:00', '17:00:00'),
+('3780ca96-2361-4497-a5ff-016940f145d6', 'S', '10:00:00', '13:00:00'),
+('41f1bf1e-ceed-429f-b349-bb7b88d1e614', 'MW', '11:00:00', '19:00:00'),
+('41f1bf1e-ceed-429f-b349-bb7b88d1e614', 'VSD', '10:00:00', '17:00:00'),
+('533bb49a-2baa-47a5-b555-4c2b41e60790', 'LMWJV', '07:00:00', '15:00:00'),
+('5f6362a0-fa26-4256-993e-16e40e9e2ad5', 'LMWJ', '10:00:00', '18:00:00'),
+('5f6362a0-fa26-4256-993e-16e40e9e2ad5', 'V', '09:00:00', '15:00:00'),
+('60987d16-17ff-4fe6-b6e5-5155e27add51', 'LMWJV', '07:00:00', '15:00:00'),
+('60987d16-17ff-4fe6-b6e5-5155e27add51', 'S', '08:00:00', '12:00:00'),
+('6190fa88-a6ef-4291-ba72-518a20087762', 'MJ', '08:00:00', '16:00:00'),
+('6190fa88-a6ef-4291-ba72-518a20087762', 'V', '14:00:00', '19:00:00'),
+('991e1575-62d3-4e1a-a55c-3b255b9b830d', 'MW', '14:00:00', '20:00:00'),
+('991e1575-62d3-4e1a-a55c-3b255b9b830d', 'SD', '10:00:00', '16:00:00'),
+('b46cf527-11f9-4cfd-be1d-af4c06a5f691', 'MWV', '06:00:00', '14:00:00'),
+('b46cf527-11f9-4cfd-be1d-af4c06a5f691', 'LJ', '10:00:00', '18:00:00'),
+('d783abb6-6a4c-4436-bfd9-d7bc099bf84b', 'LMWJ', '06:30:00', '14:30:00'),
+('d783abb6-6a4c-4436-bfd9-d7bc099bf84b', 'V', '07:00:00', '13:00:00');
+
+--Profesionales categorias
+INSERT INTO profesionales_categorias (profesional_id, categoria_id) VALUES
+-- Danna Ramirez - Consultas Generales (Veterinaria)
+('2c2d2ce0-e5b8-4f3f-8e6e-a4b78cc0a643', 1),
+-- Ana García - Medicina Veterinaria General (Veterinaria)
+('34992607-a7b9-4bdd-8997-9f14cf0092f7', 1),
+-- Dra. Patricia Ruiz - Dermatología Veterinaria (Veterinaria)
+('3780ca96-2361-4497-a5ff-016940f145d6', 1),
+-- María López - Medicina Veterinaria General (Veterinaria)
+('533bb49a-2baa-47a5-b555-4c2b41e60790', 1),
+-- Juan Ramírez - Radiología Veterinaria (Veterinaria)
+('60987d16-17ff-4fe6-b6e5-5155e27add51', 1),
+-- Dr. Miguel Vargas - Cardiología Veterinaria (Veterinaria)
+('6190fa88-a6ef-4291-ba72-518a20087762', 1),
+-- Carlos Mendoza - Medicina Veterinaria General (Veterinaria)
+('991e1575-62d3-4e1a-a55c-3b255b9b830d', 1),
+-- Dr. Roberto Hernández - Cirugía Veterinaria (Veterinaria)
+('b46cf527-11f9-4cfd-be1d-af4c06a5f691', 1),
+-- Carmen Flores - Laboratorio Clínico (Veterinaria - apoyo diagnóstico)
+('d783abb6-6a4c-4436-bfd9-d7bc099bf84b', 1),
+
+-- CATEGORÍA ESTÉTICA (ID: 2)
+-- Laura Jiménez - Estética Canina (Estética)
+('5f6362a0-fa26-4256-993e-16e40e9e2ad5', 2),
+-- Sofia Torres - Spa y Relajación Animal (Estética)
+('41f1bf1e-ceed-429f-b349-bb7b88d1e614', 2),
+
+-- PROFESIONALES MULTIDISCIPLINARIOS (ambas categorías)
+-- Danna Ramirez - Consultas Generales (también puede hacer servicios estéticos básicos)
+('2c2d2ce0-e5b8-4f3f-8e6e-a4b78cc0a643', 2),
+-- Ana García - Medicina General (también capacitada en estética básica)
+('34992607-a7b9-4bdd-8997-9f14cf0092f7', 2),
+-- María López - Medicina General (también puede hacer servicios estéticos)
+('533bb49a-2baa-47a5-b555-4c2b41e60790', 2);
