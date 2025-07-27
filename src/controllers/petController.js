@@ -28,7 +28,7 @@ export class PetController {
     const pets = await petModel.getAllPets()
 
     if (pets.length === 0) {
-      return res.status(404).json({ error: 'Pets not found' })
+      return res.status(200).json({ message: 'No pets found', data: [] })
     }
     res.json({ message: 'Pets found', data: pets })
   }
@@ -58,7 +58,7 @@ export class PetController {
     const pets = await petModel.getByUser({ userId })
 
     if (pets.length === 0) {
-      return res.status(404).json({ error: 'Pets not found' })
+      return res.status(200).json({ message: 'No pets found for this user', data: [] })
     }
     res.json({ message: 'Pets found', data: pets })
   }
