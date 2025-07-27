@@ -111,7 +111,7 @@ function validateWorkingDays (workingDays) {
 
 async function checkScheduleConflicts ({ profesionalId, startTime, endTime, workingDays, excludeScheduleId = null }) {
   // Obtener horarios existentes, excluyendo el actual si es una actualización
-  const existingSchedules = await scheduleModel.getByVetId({ vetId: profesionalId })
+  const existingSchedules = await scheduleModel.getAllSchedules({ profesional_id: profesionalId })
   const otherSchedules = excludeScheduleId
     ? existingSchedules.filter(s => s.id !== excludeScheduleId)
     : existingSchedules
