@@ -15,12 +15,13 @@ const AppointmentSchema = z.object({
     .uuid('El ID de la mascota debe ser un UUID válido')
     .trim(),
 
+  // profesional_id ahora es opcional - se asigna automáticamente
   profesional_id: z.string({
-    required_error: 'El ID del profesional es obligatorio',
     invalid_type_error: 'El ID del profesional debe ser un UUID válido'
   })
     .uuid('El ID del profesional debe ser un UUID válido')
-    .trim(),
+    .trim()
+    .optional(),
 
   servicio_id: z.number({
     required_error: 'El ID del servicio es obligatorio',
