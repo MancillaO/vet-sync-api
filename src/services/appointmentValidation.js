@@ -17,7 +17,11 @@ export async function runValidations (data) {
   const date = validateDate(data.fecha)
   if (date.error) errors.push(date.error)
 
-  // 3. Valida disponibilidad de horario y superposiciones (solo si se proporciona profesional_id)
+  // 3. Valida que la mascota no tenga citas en el mismo horario
+  const petOverlap = await validatePetOverlap(data)
+  if (petOverlap.error) errors.push(petOverlap.error)
+
+  // 4. Valida disponibilidad de horario y superposiciones (solo si se proporciona profesional_id)
   if (data.profesional_id) {
     const vet = await validateVet(data.profesional_id)
     if (vet.error) errors.push(vet.error)
@@ -86,11 +90,50 @@ function validateDate (dateString) {
   }
 }
 
+async function validatePetOverlap (appointmentData) {
+  try {
+    const { fecha, hora_inicio, servicio_id, mascota_id } = appointmentData
+
+    if (!hora_inicio || !servicio_id || !mascota_id) {
+      return { error: null } // Si no hay datos suficientes, no validamos overlap
+    }
+
+    if (!isValidTimeFormat(hora_inicio)) {
+      return { error: null } // La validación de formato se hace en otro lado
+    }
+
+    const servicio = await serviceModel.getById({ id: servicio_id })
+    if (!servicio || servicio.length === 0) {
+      return { error: null } // La validación de servicio se hace en otro lado
+    }
+
+    const duracionMinutos = servicio[0].duracion_minutos || 30
+    const hora_fin = calcularHoraFin(hora_inicio, duracionMinutos)
+
+    const overlappingPetAppointments = await AppointmentModel.findOverlappingAppointments({
+      mascota_id,
+      fecha,
+      hora_inicio,
+      hora_fin
+    })
+
+    if (overlappingPetAppointments.length > 0) {
+      return {
+        error: 'La mascota ya tiene una cita agendada en ese horario'
+      }
+    }
+
+    return { error: null }
+  } catch (error) {
+    console.error('Error al validar superposición de mascota:', error)
+    return { error: 'Error al validar el horario de la mascota' }
+  }
+}
+
 async function validateAppointmentTime (appointmentData) {
   try {
     const { profesional_id, cliente_id, fecha, hora_inicio, servicio_id } = appointmentData
 
-    // Verificaciones básicas de los datos de hora
     if (!hora_inicio) {
       return { error: 'Se requiere especificar la hora de inicio de la cita' }
     }
@@ -103,21 +146,17 @@ async function validateAppointmentTime (appointmentData) {
       return { error: 'Se requiere especificar el servicio para la cita' }
     }
 
-    // Si no hay profesional_id, solo validamos formato básico
-    // La asignación automática se encarga del resto
     if (!profesional_id) {
       return { error: null }
     }
 
-    // Obtener la duración del servicio usando serviceModel
     const servicio = await serviceModel.getById({ id: servicio_id })
 
     if (!servicio || servicio.length === 0) {
       return { error: 'No se pudo obtener la información del servicio' }
     }
 
-    // Calcular hora_fin basada en la duración del servicio (simular el trigger de BD)
-    const duracionMinutos = servicio[0].duracion_minutos || 30 // Fallback a 30 minutos si no hay duración
+    const duracionMinutos = servicio[0].duracion_minutos || 30
     const hora_fin = calcularHoraFin(hora_inicio, duracionMinutos)
 
     const dayOfWeek = new Date(fecha).getDay()
@@ -143,8 +182,6 @@ async function validateAppointmentTime (appointmentData) {
 
     const profesionalSchedule = schedules[0]
 
-    // 1. Verificar que la cita completa esté dentro del horario laboral del profesional
-    // Esto implica comprobar que tanto el inicio como el fin de la cita estén dentro del horario laboral
     const startIsWithinHours = checkIfTimeIsWithinRange(
       hora_inicio,
       profesionalSchedule.hora_inicio,
@@ -163,8 +200,6 @@ async function validateAppointmentTime (appointmentData) {
       }
     }
 
-    // 2. Verificar si hay citas superpuestas para el mismo profesional
-    // Usamos hora_fin calculada con la duración del servicio
     const overlappingProfessionalAppointments = await AppointmentModel.findOverlappingAppointments({
       profesional_id,
       fecha,
@@ -178,13 +213,11 @@ async function validateAppointmentTime (appointmentData) {
       }
     }
 
-    // 3. Verificar si hay citas superpuestas para el mismo cliente
-    // Usamos hora_fin calculada con la duración del servicio
     const overlappingClientAppointments = await AppointmentModel.findOverlappingAppointments({
       cliente_id,
       fecha,
       hora_inicio,
-      hora_fin // Este valor es calculado, no proviene de la petición
+      hora_fin
     })
 
     if (overlappingClientAppointments.length > 0) {
@@ -199,6 +232,3 @@ async function validateAppointmentTime (appointmentData) {
     return { error: 'Error al validar el horario de la cita' }
   }
 }
-
-// Las funciones checkIfTimeIsWithinRange, isValidTimeFormat y calcularHoraFin
-// han sido movidas a src/utils/timeUtils.js
