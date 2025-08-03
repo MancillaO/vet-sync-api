@@ -1,6 +1,7 @@
 import { validateAppointment, validatePartialAppointment } from '#schemas/appointmentSchema.js'
 import { AppointmentModel } from '#models/appointmentModel.js'
 import { runValidations } from '#services/appointmentValidation.js'
+import { assignProfessional } from '#services/professionalAssignment.js'
 
 export class AppointmentController {
   static async getAllAppointments (req, res) {
@@ -71,6 +72,7 @@ export class AppointmentController {
     }
 
     try {
+      // 1. Validaciones básicas
       const validation = await runValidations(result.data)
 
       if (!validation.isValid) {
@@ -80,10 +82,55 @@ export class AppointmentController {
         })
       }
 
-      const appointment = await AppointmentModel.addAppointment({ input: result.data })
+      // 2. Asignación automática de profesional
+      const assignmentResult = await assignProfessional(result.data)
+
+      if (!assignmentResult.success) {
+        const statusCode = assignmentResult.code === 'NO_AVAILABILITY' ? 409 : 400
+
+        const response = {
+          error: assignmentResult.error,
+          code: assignmentResult.code
+        }
+
+        // Agregar sugerencias si existen
+        if (assignmentResult.sugerencias) {
+          response.sugerencias = assignmentResult.sugerencias
+        }
+
+        return res.status(statusCode).json(response)
+      }
+
+      // 3. Crear la cita con el profesional asignado
+      const appointmentData = {
+        ...result.data,
+        profesional_id: assignmentResult.professional.id
+      }
+
+      const appointment = await AppointmentModel.addAppointment({ input: appointmentData })
+
+      // 4. Respuesta exitosa según la especificación
       return res.status(201).json({
-        message: 'Cita creada exitosamente',
-        data: appointment
+        success: true,
+        cita: {
+          id: appointment[0].id,
+          fecha: appointment[0].fecha,
+          hora: appointment[0].hora_inicio,
+          servicio: {
+            id: assignmentResult.servicio.id,
+            nombre: assignmentResult.servicio.nombre,
+            duracion_estimada: assignmentResult.servicio.duracion_estimada
+          },
+          profesional: {
+            id: assignmentResult.professional.id,
+            nombre: assignmentResult.professional.nombre,
+            apellido: assignmentResult.professional.apellido,
+            especialidad: assignmentResult.professional.especialidad
+          },
+          mascota: {
+            id: appointmentData.mascota_id
+          }
+        }
       })
     } catch (error) {
       console.error('Error inesperado:', error)
