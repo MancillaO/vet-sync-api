@@ -13,17 +13,18 @@ export async function runValidations (data) {
   const pet = await validatePet(data.mascota_id, data.cliente_id)
   if (pet.error) errors.push(pet.error)
 
-  // 2. Valida que el profesional exista y esté activo
-  const vet = await validateVet(data.profesional_id)
-  if (vet.error) errors.push(vet.error)
-
-  // 3. Valida que la fecha no sea en el pasado
+  // 2. Valida que la fecha no sea en el pasado
   const date = validateDate(data.fecha)
   if (date.error) errors.push(date.error)
 
-  // 4. Valida disponibilidad de horario y superposiciones
-  const appointmentTime = await validateAppointmentTime(data)
-  if (appointmentTime.error) errors.push(appointmentTime.error)
+  // 3. Valida disponibilidad de horario y superposiciones (solo si se proporciona profesional_id)
+  if (data.profesional_id) {
+    const vet = await validateVet(data.profesional_id)
+    if (vet.error) errors.push(vet.error)
+
+    const appointmentTime = await validateAppointmentTime(data)
+    if (appointmentTime.error) errors.push(appointmentTime.error)
+  }
 
   return {
     isValid: errors.length === 0,
@@ -100,6 +101,12 @@ async function validateAppointmentTime (appointmentData) {
 
     if (!servicio_id) {
       return { error: 'Se requiere especificar el servicio para la cita' }
+    }
+
+    // Si no hay profesional_id, solo validamos formato básico
+    // La asignación automática se encarga del resto
+    if (!profesional_id) {
+      return { error: null }
     }
 
     // Obtener la duración del servicio usando serviceModel
