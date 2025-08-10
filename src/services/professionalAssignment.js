@@ -33,18 +33,6 @@ export async function assignProfessional (appointmentData) {
     const assignmentResult = result[0]
 
     if (!assignmentResult.success) {
-      // Si no hay disponibilidad, obtener sugerencias
-      if (assignmentResult.error_code === 'NO_AVAILABILITY') {
-        const suggestions = await getAlternativeTimeSuggestions(servicio_id, fecha)
-
-        return {
-          success: false,
-          error: assignmentResult.error_message,
-          code: assignmentResult.error_code,
-          sugerencias: suggestions
-        }
-      }
-
       return {
         success: false,
         error: assignmentResult.error_message,
@@ -73,77 +61,6 @@ export async function assignProfessional (appointmentData) {
       error: 'Error interno en la asignación de profesional',
       code: 'INTERNAL_ERROR'
     }
-  }
-}
-
-/**
- * Obtiene sugerencias de horarios alternativos usando función de PostgreSQL
- * @param {number} servicio_id - ID del servicio (INTEGER)
- * @param {string} fecha - Fecha base para buscar alternativas
- * @param {number} limit - Número máximo de sugerencias (default: 5)
- * @returns {Array} - Array de sugerencias de horarios
- */
-export async function getAlternativeTimeSuggestions (servicio_id, fecha, limit = 5) {
-  try {
-    const { data: suggestions, error } = await supabase
-      .rpc('get_alternative_time_suggestions', {
-        p_servicio_id: parseInt(servicio_id), // Asegurar que sea INTEGER
-        p_fecha_inicial: fecha,
-        p_limit: limit
-      })
-
-    if (error) {
-      console.error('Error obteniendo sugerencias:', error)
-      return []
-    }
-
-    // Formatear sugerencias para el formato esperado por el frontend
-    return suggestions.map(suggestion => ({
-      fecha: suggestion.fecha,
-      hora: suggestion.hora_inicio,
-      profesional: `${suggestion.profesional_nombre} ${suggestion.profesional_apellido}`,
-      profesional_id: suggestion.profesional_id
-    }))
-  } catch (error) {
-    console.error('Error generando sugerencias:', error)
-    return []
-  }
-}
-
-/**
- * Obtiene todos los profesionales disponibles para un servicio específico
- * Útil para mostrar opciones al usuario o para debugging
- * @param {number} servicio_id - ID del servicio (INTEGER)
- * @param {string} fecha - Fecha en formato YYYY-MM-DD
- * @param {string} hora_inicio - Hora en formato HH:MM
- * @param {string} hora_fin - Hora en formato HH:MM
- * @returns {Array} - Array de profesionales disponibles
- */
-export async function getAvailableProfessionals (servicio_id, fecha, hora_inicio, hora_fin) {
-  try {
-    const { data: professionals, error } = await supabase
-      .rpc('get_available_professionals', {
-        p_servicio_id: parseInt(servicio_id), // Asegurar que sea INTEGER
-        p_fecha: fecha,
-        p_hora_inicio: hora_inicio,
-        p_hora_fin: hora_fin
-      })
-
-    if (error) {
-      console.error('Error obteniendo profesionales disponibles:', error)
-      return []
-    }
-
-    return professionals.map(prof => ({
-      id: prof.profesional_id,
-      nombre: prof.nombre,
-      apellido: prof.apellido,
-      especialidad: prof.especialidad,
-      appointmentCount: prof.appointment_count
-    }))
-  } catch (error) {
-    console.error('Error en getAvailableProfessionals:', error)
-    return []
   }
 }
 

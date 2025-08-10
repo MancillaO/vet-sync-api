@@ -176,4 +176,25 @@ export class AppointmentModel {
       throw error
     }
   }
+
+  /**
+   * Actualiza solo el estado de una cita
+   * @param {number} id - ID de la cita
+   * @param {string} status - Nuevo estado
+   */
+  static async updateAppointmentStatus ({ id, status }) {
+    try {
+      const { data: appointment, error } = await supabase
+        .from('citas')
+        .update({ status })
+        .eq('id', id)
+        .select()
+
+      if (error) throw error
+
+      return appointment
+    } catch (error) {
+      throw error
+    }
+  }
 }
