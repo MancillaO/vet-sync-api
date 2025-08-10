@@ -1,7 +1,12 @@
 import { createClient } from '@supabase/supabase-js'
 import { supabaseUrl, supabaseKey } from '#root/config.js'
 
-export const supabase = createClient(supabaseUrl, supabaseKey)
+export const supabase = createClient(supabaseUrl, supabaseKey, {
+  auth: {
+    autoRefreshToken: false,
+    persistSession: false
+  }
+})
 
 const verifyConnection = async () => {
   try {
