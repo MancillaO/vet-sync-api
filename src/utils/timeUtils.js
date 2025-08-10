@@ -25,3 +25,9 @@ export function calcularHoraFin (horaInicio, duracionMinutos) {
 
   return `${horasFin.toString().padStart(2, '0')}:${minutosFin.toString().padStart(2, '0')}`
 }
+
+export const getCurrentDateTime = () => {
+  const now = new Date().toLocaleString('sv-SE', { timeZone: 'America/Mexico_City' })
+  const [currentDate, currentTime] = now.split(' ')
+  return { currentDate, currentTime }
+}

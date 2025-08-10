@@ -14,7 +14,7 @@ export async function runValidations (data) {
   if (pet.error) errors.push(pet.error)
 
   // 2. Valida que la fecha no sea en el pasado
-  const date = validateDate(data.fecha)
+  const date = validateDate(data.fecha, data.hora_inicio)
   if (date.error) errors.push(date.error)
 
   // 3. Valida que la mascota no tenga citas en el mismo horario
@@ -72,16 +72,31 @@ async function validateVet (vetId) {
   }
 }
 
-function validateDate (dateString) {
+function validateDate (dateString, hora_inicio = null) {
   try {
-    const today = new Date()
-    today.setHours(0, 0, 0, 0)
+    const now = new Date()
+    const today = new Date(now.getFullYear(), now.getMonth(), now.getDate())
 
-    const appointmentDate = new Date(dateString)
-    appointmentDate.setHours(0, 0, 0, 0)
+    // Crear fecha de la cita usando el constructor que evita problemas de timezone
+    const [year, month, day] = dateString.split('-').map(Number)
+    const appointmentDate = new Date(year, month - 1, day)
 
+    // Si la fecha es anterior a hoy, es inválida
     if (appointmentDate < today) {
       return { error: 'La fecha no puede ser pasada' }
+    }
+
+    // Si es el mismo día y se proporciona hora_inicio, validar que sea futura
+    if (appointmentDate.getTime() === today.getTime() && hora_inicio) {
+      const [hours, minutes] = hora_inicio.split(':').map(Number)
+      const appointmentDateTime = new Date(year, month - 1, day, hours, minutes)
+
+      // Dar un margen de 1 minuto para evitar problemas de timing
+      const nowWithMargin = new Date(now.getTime() + 60000) // +1 minuto
+
+      if (appointmentDateTime < nowWithMargin) {
+        return { error: 'La hora de la cita debe ser futura' }
+      }
     }
 
     return { error: null }
