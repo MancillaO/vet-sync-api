@@ -7,8 +7,6 @@ export class AppointmentStatusManager {
   static init () {
     if (NODE_ENV === 'production') {
       this.startCron()
-    } else {
-      console.log('ℹ️ Cron job deshabilitado - No está en entorno de producción')
     }
   }
 
