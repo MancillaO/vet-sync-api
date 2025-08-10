@@ -1,10 +1,15 @@
 import cron from 'node-cron'
 import { AppointmentModel } from '#models/appointmentModel.js'
 import { getCurrentDateTime } from '#utils/timeUtils.js'
+import { NODE_ENV } from '#root/config.js'
 
 export class AppointmentStatusManager {
   static init () {
-    this.startCron()
+    if (NODE_ENV === 'production') {
+      this.startCron()
+    } else {
+      console.log('ℹ️ Cron job deshabilitado - No está en entorno de producción')
+    }
   }
 
   static startCron () {
