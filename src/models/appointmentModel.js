@@ -58,23 +58,17 @@ export class AppointmentModel {
     const { servicio_id, hora_inicio } = input
 
     try {
-      // 1. Obtener la duración del servicio para calcular la hora de fin
       const service = await serviceModel.getById({ id: servicio_id })
       if (!service || service.length === 0) {
         throw new Error('Servicio no encontrado para calcular la duración de la cita.')
       }
       const duracionEstimada = service[0].duracion_estimada
-
-      // 2. Calcular la hora de finalización
       const hora_fin = calcularHoraFin(hora_inicio, duracionEstimada)
-
-      // 3. Crear el objeto de la cita con la hora de fin
       const appointmentData = {
         ...input,
         hora_fin
       }
 
-      // 4. Insertar la cita en la base de datos
       const { data: appointment, error } = await supabase.from('citas').insert(appointmentData).select()
 
       if (error) throw error
@@ -125,7 +119,6 @@ export class AppointmentModel {
 
   static async findOverlappingAppointments ({ fecha, hora_inicio, hora_fin, profesional_id, cliente_id }) {
     try {
-      // Consulta base: citas para la misma fecha que no estén canceladas
       let query = supabase.from('citas')
         .select()
         .eq('fecha', fecha)
@@ -143,7 +136,6 @@ export class AppointmentModel {
 
       if (error) throw error
 
-      // Función auxiliar para convertir formato HH:MM a minutos para facilitar comparaciones
       const convertToMinutes = (timeStr) => {
         const [h, m] = timeStr.split(':').map(Number)
         return h * 60 + m
@@ -152,7 +144,6 @@ export class AppointmentModel {
       const newStartMinutes = convertToMinutes(hora_inicio)
       const newEndMinutes = convertToMinutes(hora_fin)
 
-      // Filtrar citas que se solapan con la nueva cita propuesta
       const overlappingAppointments = appointments.filter(appointment => {
         const existingStartTime = appointment.hora_inicio
         const existingEndTime = appointment.hora_fin
@@ -160,39 +151,14 @@ export class AppointmentModel {
         const existingStartMinutes = convertToMinutes(existingStartTime)
         const existingEndMinutes = convertToMinutes(existingEndTime)
 
-        // Tres casos de superposición:
         return (
-          // 1. La nueva cita comienza durante una cita existente
           (newStartMinutes >= existingStartMinutes && newStartMinutes < existingEndMinutes) ||
-          // 2. La nueva cita termina durante una cita existente
           (newEndMinutes > existingStartMinutes && newEndMinutes <= existingEndMinutes) ||
-          // 3. La nueva cita engloba completamente a una cita existente
           (newStartMinutes <= existingStartMinutes && newEndMinutes >= existingEndMinutes)
         )
       })
 
       return overlappingAppointments
-    } catch (error) {
-      throw error
-    }
-  }
-
-  /**
-   * Actualiza solo el estado de una cita
-   * @param {number} id - ID de la cita
-   * @param {string} status - Nuevo estado
-   */
-  static async updateAppointmentStatus ({ id, status }) {
-    try {
-      const { data: appointment, error } = await supabase
-        .from('citas')
-        .update({ status })
-        .eq('id', id)
-        .select()
-
-      if (error) throw error
-
-      return appointment
     } catch (error) {
       throw error
     }
