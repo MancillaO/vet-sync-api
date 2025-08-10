@@ -1,3 +1,4 @@
+// src/services/appointmentStatusManager.js
 import cron from 'node-cron'
 import { AppointmentModel } from '#models/appointmentModel.js'
 import { getCurrentDateTime } from '#utils/timeUtils.js'
@@ -5,7 +6,7 @@ import { NODE_ENV } from '#root/config.js'
 
 export class AppointmentStatusManager {
   static init () {
-    if (NODE_ENV === 'production') {
+    if (NODE_ENV === 'development') {
       this.startCron()
     }
   }

@@ -8,6 +8,6 @@ export const {
   SUPABASE_URL: supabaseUrl,
   SUPABASE_SERVICE_ROLE_KEY: supabaseKey,
   API_KEY: apiKey,
-  ALLOWED_ORIGINS: envOrigins = 'http://localhost:5173, https://vet-sync.vercel.app',
+  ALLOWED_ORIGINS: envOrigins = 'http://localhost:5173, https://vetsync.vercel.app',
   allowedOrigins = envOrigins.split(',').map(origin => origin.trim())
 } = process.env
