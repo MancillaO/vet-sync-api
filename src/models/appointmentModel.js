@@ -87,6 +87,7 @@ export class AppointmentModel {
     if (input.profesional_id) updateData.profesional_id = input.profesional_id
     if (input.servicio_id) updateData.servicio_id = input.servicio_id
     if (input.fecha) updateData.fecha_cita = input.fecha
+    if (input.status) updateData.status = input.status
     if (input.hora_inicio) updateData.hora_cita = input.hora_cita
     if (input.motivo_consulta) updateData.motivo_consulta = input.motivo_consulta
 
