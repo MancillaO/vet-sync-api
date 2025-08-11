@@ -3,7 +3,7 @@ import { vetModel } from '#models/vetModel.js'
 import { AppointmentModel } from '#models/appointmentModel.js'
 import { scheduleModel } from '#models/scheduleModel.js'
 import { serviceModel } from '#models/serviceModel.js'
-import { checkIfTimeIsWithinRange, isValidTimeFormat, calcularHoraFin } from '#utils/timeUtils.js'
+import { checkIfTimeIsWithinRange, isValidTimeFormat, calcularHoraFin, getCurrentDateTime } from '#utils/timeUtils.js'
 
 export async function runValidations (data) {
   // Acumula errores para devolver todas las validaciones fallidas juntas
@@ -74,8 +74,10 @@ async function validateVet (vetId) {
 
 function validateDate (dateString, hora_inicio = null) {
   try {
-    const now = new Date()
-    const today = new Date(now.getFullYear(), now.getMonth(), now.getDate())
+    // Usar la hora local de CDMX en lugar de la hora del servidor
+    const { currentDate, currentTime } = getCurrentDateTime()
+    const [currentYear, currentMonth, currentDay] = currentDate.split('-').map(Number)
+    const today = new Date(currentYear, currentMonth - 1, currentDay)
 
     // Crear fecha de la cita usando el constructor que evita problemas de timezone
     const [year, month, day] = dateString.split('-').map(Number)
@@ -91,10 +93,14 @@ function validateDate (dateString, hora_inicio = null) {
       const [hours, minutes] = hora_inicio.split(':').map(Number)
       const appointmentDateTime = new Date(year, month - 1, day, hours, minutes)
 
-      // Dar un margen de 1 minuto para evitar problemas de timing
-      const nowWithMargin = new Date(now.getTime() + 60000) // +1 minuto
+      // Crear la fecha y hora actual usando la hora de CDMX
+      const [currentHours, currentMinutes] = currentTime.split(':').map(Number)
+      const currentDateTime = new Date(currentYear, currentMonth - 1, currentDay, currentHours, currentMinutes)
 
-      if (appointmentDateTime < nowWithMargin) {
+      // Dar un margen de 1 minuto para evitar problemas de timing
+      const currentWithMargin = new Date(currentDateTime.getTime() + 60000) // +1 minuto
+
+      if (appointmentDateTime < currentWithMargin) {
         return { error: 'La hora de la cita debe ser futura' }
       }
     }
@@ -174,7 +180,10 @@ async function validateAppointmentTime (appointmentData) {
     const duracionMinutos = servicio[0].duracion_minutos || 30
     const hora_fin = calcularHoraFin(hora_inicio, duracionMinutos)
 
-    const dayOfWeek = new Date(fecha).getDay()
+    // Obtener el día de la semana de manera consistente usando la fecha como string
+    const [year, month, day] = fecha.split('-').map(Number)
+    const appointmentDate = new Date(year, month - 1, day)
+    const dayOfWeek = appointmentDate.getDay()
     const dayMap = {
       0: 'D', // Domingo
       1: 'L', // Lunes
