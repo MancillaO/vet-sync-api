@@ -1,4 +1,9 @@
-CREATE OR REPLACE FUNCTION public.obtener_citas_detalle(p_cita_id integer DEFAULT NULL::integer)
+-- Drop existing function to avoid conflicts
+DROP FUNCTION IF EXISTS public.obtener_citas_detalle(integer);
+DROP FUNCTION IF EXISTS public.obtener_citas_detalle(integer, integer);
+DROP FUNCTION IF EXISTS public.obtener_citas_detalle(integer, uuid);
+
+CREATE OR REPLACE FUNCTION public.obtener_citas_detalle(p_cita_id integer DEFAULT NULL::integer, p_cliente_id uuid DEFAULT NULL::uuid)
  RETURNS TABLE(
     id integer, 
     fecha date, 
@@ -38,7 +43,8 @@ BEGIN
     INNER JOIN profesionales p ON c.profesional_id = p.id
     INNER JOIN servicios s ON c.servicio_id = s.id
     WHERE 
-        (p_cita_id IS NULL OR c.id = p_cita_id)
+    (p_cita_id IS NULL OR c.id = p_cita_id)
+    AND (p_cliente_id IS NULL OR u.id = p_cliente_id)
     ORDER BY c.fecha DESC, c.hora_inicio DESC;
 END;
 $function$

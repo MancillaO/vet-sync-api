@@ -27,9 +27,9 @@ export class AppointmentModel {
     }
   }
 
-  static async getDetailedAppointments () {
+  static async getDetailedAppointments ({ clienteId }) {
     try {
-      const { data: appointments, error } = await supabase.rpc('obtener_citas_detalle')
+      const { data: appointments, error } = await supabase.rpc('obtener_citas_detalle', { p_cliente_id: clienteId ?? null })
 
       if (error) throw error
 
