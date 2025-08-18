@@ -35,8 +35,10 @@ export class AppointmentController {
   }
 
   static async getDetailedAppointments (req, res) {
+    const { clienteId } = req.query
+
     try {
-      const appointments = await AppointmentModel.getDetailedAppointments()
+      const appointments = await AppointmentModel.getDetailedAppointments({ clienteId })
 
       if (appointments.length === 0) {
         return res.status(200).json({ message: 'No appointments found', data: [] })
