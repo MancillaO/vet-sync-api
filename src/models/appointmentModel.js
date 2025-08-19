@@ -118,12 +118,12 @@ export class AppointmentModel {
     }
   }
 
-  static async findOverlappingAppointments ({ fecha, hora_inicio, hora_fin, profesional_id, cliente_id }) {
+  static async findOverlappingAppointments ({ fecha, hora_inicio, hora_fin, profesional_id, cliente_id, mascota_id }) {
     try {
       let query = supabase.from('citas')
         .select()
         .eq('fecha', fecha)
-        .not('status', 'eq', 'Cancelada')
+        .in('status', ['Programada', 'Reprogramada', 'En Curso'])
 
       if (profesional_id) {
         query = query.eq('profesional_id', profesional_id)
@@ -131,6 +131,10 @@ export class AppointmentModel {
 
       if (cliente_id) {
         query = query.eq('cliente_id', cliente_id)
+      }
+
+      if (mascota_id) {
+        query = query.eq('mascota_id', mascota_id)
       }
 
       const { data: appointments, error } = await query
