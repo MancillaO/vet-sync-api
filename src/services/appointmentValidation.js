@@ -128,7 +128,7 @@ async function validatePetOverlap (appointmentData) {
       return { error: null } // La validación de servicio se hace en otro lado
     }
 
-    const duracionMinutos = servicio[0].duracion_minutos || 30
+    const duracionMinutos = servicio[0].duracion_estimada || 30
     const hora_fin = calcularHoraFin(hora_inicio, duracionMinutos)
 
     const overlappingPetAppointments = await AppointmentModel.findOverlappingAppointments({
