@@ -104,4 +104,26 @@ export class ServiceController {
       return res.status(500).json({ error: error.message })
     }
   }
+
+  static async getBlockedSlots (req, res) {
+    const { id } = req.params
+
+    try {
+      // Verificar que el servicio existe
+      const service = await serviceModel.getById(id)
+
+      if (service.length === 0) {
+        return res.status(404).json({ error: 'Service not found' })
+      }
+
+      const blockedSlots = await serviceModel.getBlockedSlots(id)
+
+      res.json({
+        message: 'Blocked slots retrieved successfully',
+        data: { blocked_slots: blockedSlots }
+      })
+    } catch (error) {
+      return res.status(500).json({ error: error.message })
+    }
+  }
 }

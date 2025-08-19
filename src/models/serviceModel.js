@@ -1,4 +1,5 @@
 import { supabase } from '#databases/index.js'
+import { getCurrentDateTime } from '#utils/timeUtils.js'
 
 export class serviceModel {
   static async getAllServices ({ categoria_id }) {
@@ -184,6 +185,32 @@ export class serviceModel {
       // Log del error pero no fallar completamente
       console.warn('Error deleting image from storage:', error.message)
       return false
+    }
+  }
+
+  static async getBlockedSlots (serviceId) {
+    try {
+      // Obtener los próximos 30 días para el análisis usando timezone de CDMX
+      const { currentDate } = getCurrentDateTime()
+      const today = new Date(currentDate + 'T00:00:00')
+      const thirtyDaysLater = new Date(currentDate + 'T00:00:00')
+      thirtyDaysLater.setDate(today.getDate() + 30)
+
+      // Formatear fechas para PostgreSQL (YYYY-MM-DD)
+      const startDate = today.toISOString().split('T')[0]
+      const endDate = thirtyDaysLater.toISOString().split('T')[0]
+
+      const { data, error } = await supabase.rpc('get_blocked_slots_for_service', {
+        p_service_id: serviceId,
+        p_start_date: startDate,
+        p_end_date: endDate
+      })
+
+      if (error) throw error
+
+      return data || {}
+    } catch (error) {
+      throw error
     }
   }
 }
