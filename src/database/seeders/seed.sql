@@ -155,7 +155,7 @@ INSERT INTO horarios_profesionales (profesional_id, dias_trabajo, hora_inicio, h
 ('d783abb6-6a4c-4436-bfd9-d7bc099bf84b', 'V', '07:00:00', '13:00:00');
 
 --Profesionales categorias
-INSERT INTO profesionales_categorias (profesional_id, categoria_id) VALUES
+INSERT INTO profesional_categorias (profesional_id, categoria_id) VALUES
 -- Danna Ramirez - Consultas Generales (Veterinaria)
 ('2c2d2ce0-e5b8-4f3f-8e6e-a4b78cc0a643', 1),
 -- Ana García - Medicina Veterinaria General (Veterinaria)

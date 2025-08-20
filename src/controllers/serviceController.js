@@ -1,6 +1,7 @@
 import { validateService, validatePartialService } from '#schemas/serviceSchema.js'
 import { serviceModel } from '#models/serviceModel.js'
 import { runValidations } from '#root/src/services/serviceValidation.js'
+import { getCurrentDateTime } from '#utils/timeUtils.js'
 
 export class ServiceController {
   static async getAllServices (req, res) {
@@ -100,6 +101,43 @@ export class ServiceController {
       }
 
       res.json({ message: 'Service deleted', data: deletedService })
+    } catch (error) {
+      return res.status(500).json({ error: error.message })
+    }
+  }
+
+  static async getBlockedSlots (req, res) {
+    const { id } = req.params
+    const { fecha } = req.query
+
+    // Validaciones básicas
+    if (!fecha) {
+      return res.status(400).json({
+        error: 'El parámetro fecha es requerido'
+      })
+    }
+
+    const { currentDate } = getCurrentDateTime()
+    if (fecha < currentDate) {
+      return res.status(400).json({
+        error: 'La fecha no puede ser pasada'
+      })
+    }
+
+    try {
+      const blockedSlots = await serviceModel.getBlockedSlots({
+        servicio_id: id,
+        fecha
+      })
+
+      return res.status(200).json({
+        success: true,
+        data: {
+          servicio_id: parseInt(id),
+          fecha,
+          blocked_slots: blockedSlots.map(slot => slot.hora_formateada)
+        }
+      })
     } catch (error) {
       return res.status(500).json({ error: error.message })
     }
