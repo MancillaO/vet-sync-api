@@ -186,4 +186,20 @@ export class serviceModel {
       return false
     }
   }
+
+  static async getBlockedSlots ({ servicio_id, fecha }) {
+    try {
+      const { data: blockedSlots, error } = await supabase
+        .rpc('get_blocked_slots_for_day', {
+          p_servicio_id: parseInt(servicio_id),
+          p_fecha: fecha
+        })
+
+      if (error) throw error
+
+      return blockedSlots || []
+    } catch (error) {
+      throw error
+    }
+  }
 }

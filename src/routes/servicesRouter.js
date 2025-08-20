@@ -8,6 +8,7 @@ export const servicesRouter = Router()
 
 servicesRouter.get('/', ServiceController.getAllServices)
 servicesRouter.get('/:id', ServiceController.getById)
+servicesRouter.get('/:id/blocked-slots', ServiceController.getBlockedSlots)
 servicesRouter.get('/active/:active', ServiceController.getActiveServices)
 
 servicesRouter.use(authenticateToken)
